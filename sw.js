@@ -1,5 +1,5 @@
 /* Распоред 5/4 — service worker (offline меморија + увек свеж распоред) */
-var CACHE = 'raspored-54-v12';
+var CACHE = 'raspored-54-v13';
 var FAJLOVI = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', function (e) {

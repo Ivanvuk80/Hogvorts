@@ -69,6 +69,19 @@
   .iskra.i3{bottom:19vh;left:17vw;animation-delay:2s}
   @keyframes puls{0%,100%{opacity:.25;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
 
+  /* ══════ v13 — МИРНИ РЕЖИМ И СКАЧ ══════
+     Фиксни слојеви добијају сопствени GPU слој (скрол их не прерачунава),
+     „mirno“ = статични постер: исти изглед, нула покрета. */
+  .nebo,.mesec,.zamak,.pero-bg,.iskra,.sveca{will-change:transform}
+  body.mirno .pero-bg,body.skrolmir .pero-bg,
+  body.mirno .iskra,body.skrolmir .iskra,
+  body.mirno .svece,body.skrolmir .svece{display:none}
+  body.mirno .desno,body.skrolmir .desno,
+  body.mirno .krilo-l,body.skrolmir .krilo-l,
+  body.mirno .krilo-d,body.skrolmir .krilo-d,
+  body.mirno .sesir,body.skrolmir .sesir{animation:none!important}
+  body.mirno .mesec,body.skrolmir .mesec{box-shadow:0 0 22px 4px rgba(244,236,200,.18)}
+
   /* ══════ ПЕРГАМЕНТ ══════ */
   .karta{
     position:relative;z-index:2;width:100%;max-width:960px;padding:38px 38px 30px;border-radius:16px;
@@ -688,6 +701,7 @@
       <span>„Помоћ ће увек бити пружена онима који је затраже.“
         <span class="ko">Албус Дамблдор</span></span>
     </p>
+    <p class="stampaj"><a id="mirniLink" onclick="okreniMirno()">магија: мирна</a></p>
     <p class="stampaj"><a onclick="window.print()">⎙ Одштампај распоред</a></p>
   </footer>
 </main>
@@ -1290,8 +1304,31 @@ function skreniPregled(){
   if(b) b.textContent = uklj ? 'prikaži po danu' : 'prikaži sve dane';
 }
 
+/* ══════ v13 — МИРНИ РЕЖИМ ══════
+   Слабији телефони скачају кад декор игра у току скрола. „mirno“ = исти
+   изглед, нула покрета (статични постер). Укључује се аутоматски У ТОКУ
+   скрола (и враћа кад престанеш) и ручно из подножја — подразумевано МИРНО. */
+function primeniMirno(){
+  var miran = store.get('mirni') !== '0';   /* подразумјевано: мирно */
+  document.body.classList.toggle('mirno', miran);
+  var a = document.getElementById('mirniLink');
+  if(a) a.textContent = miran ? 'магија: мирна' : 'магија: пуна ✦';
+}
+function okreniMirno(){
+  var miran = store.get('mirni') !== '0';
+  store.set('mirni', miran ? '0' : '1');   /* тап: 1↔0 */
+  primeniMirno();
+}
+var mirTajmer = null;
+window.addEventListener('scroll', function(){
+  document.body.classList.add('skrolmir');
+  if(mirTajmer) clearTimeout(mirTajmer);
+  mirTajmer = setTimeout(function(){ document.body.classList.remove('skrolmir'); }, 350);
+}, {passive:true});
+
 /* ══════ ПОКРЕТАЊЕ ══════ */
 (function init(){
+  primeniMirno();
   ispuniTabelu();
   var tabovi = document.getElementById('danTabovi'), html = '';
   for(var i=0;i<DANI.length;i++)
