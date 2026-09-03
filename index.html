@@ -673,7 +673,7 @@
     </ul>
     <div class="dnevnik" id="dnevnik"></div>
 
-    <div class="poeni-reset"><a onclick="resetGodine()">нова школска година</a></div>
+    <div class="poeni-reset"><a id="sacuvajLink" onclick="sacuvajGodinu()">сачувај годину</a> · <a onclick="resetGodine()">нова школска година</a></div>
     <p class="peh">✦ Ко скупи највише — осваја Школски пехар ✦</p>
   </section>
 
@@ -1112,12 +1112,85 @@ function kackajDomac(el){
      блока (анимација квачице ради, скрол не скаче, други тап не нестаје). */
   el.classList.toggle('ck', !ukljucen);
 }
-function resetGodine(){
-  if(confirm('Нова школска година? Сви поени, звезде и пехари ће бити обрисани.')){
-    poeni = { ukupno:0, nedelje:{}, zvezde:{}, domac:{}, proslavljeno:[], log:[] };
-    cuvajPoeni();
-    azuriPoeni();
+/* v12 — АРХИВА: година се прије брисања сачува (дјељење/копија текста) —
+   „нова школска година" онда није губитак него завршна реч. */
+function fmtKljuc(k){
+  var p = String(k).split('-');
+  if(p.length !== 3) return String(k);
+  var s = p[2] + '.' + p[1] + '.';
+  if(+p[0] !== new Date().getFullYear()) s += p[0];
+  return s;
+}
+function brojZvezda(){
+  var n = 0;
+  for(var k in poeni.zvezde) if(poeni.zvezde[k]) n++;
+  return n;
+}
+function sastaviIzvestaj(){
+  var r = [], sada = new Date();
+  r.push('Грифиндор 5/4 — поени и дневник (стање ' + sada.getDate() + '. ' + MES[sada.getMonth()] + ' ' + sada.getFullYear() + '.)');
+  r.push('Укупно: ' + poeni.ukupno + ' поена');
+  var kljucevi = Object.keys(poeni.nedelje).sort(function(a,b){ return msOd(a) - msOd(b); });
+  if(kljucevi.length){
+    r.push('');
+    r.push('Недјеље:');
+    for(var i=0;i<kljucevi.length;i++){
+      var k = kljucevi[i];
+      r.push('  ' + fmtKljuc(k) + ' — ' + poeni.nedelje[k] + ' поена' + (poeni.zvezde[k] ? ' ✦' : ''));
+    }
   }
+  if(poeni.log.length){
+    r.push('');
+    r.push('Дневник починака:');
+    for(var j=0;j<poeni.log.length;j++){
+      var e = poeni.log[j];
+      r.push('  ' + fmtKljuc(e.d) + ' +' + e.n + ' ' + e.r);
+    }
+  }
+  return r.join('\n');
+}
+function povratniSacuvaj(poruka){
+  var a = document.getElementById('sacuvajLink');
+  if(!a) return;
+  a.textContent = poruka;
+  setTimeout(function(){ a.textContent = 'сачувај годину'; }, 2600);
+}
+function sacuvajGodinu(){
+  if(!poeni.ukupno && !poeni.log.length){
+    povratniSacuvaj('нема поена још');
+    return;
+  }
+  var tekst = sastaviIzvestaj();
+  if(navigator.share){
+    navigator.share({ title: 'Поени — Грифиндор 5/4', text: tekst })
+      .then(function(){ povratniSacuvaj('✓ сачувано'); })
+      .catch(function(){});
+  } else if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(tekst)
+      .then(function(){ povratniSacuvaj('✓ копирано'); })
+      .catch(function(){ povratniSacuvaj('✗ није пошло'); });
+  } else {
+    povratniSacuvaj('✗ уређај не дозвољава');
+  }
+}
+/* v12 — ресет са цифрама и уписом ОБРИШИ: палац не смје моћи да обрише годину */
+function resetGodine(){
+  var poruka = 'Нова школска година — обрисаће се СВЕ:\n'
+    + ' \u2022 ' + poeni.ukupno + ' поена\n'
+    + ' \u2022 ' + brojZvezda() + ' похвалних звезда\n'
+    + ' \u2022 ' + poeni.log.length + ' уноса у дневнику\n\n'
+    + 'Ако годину прво желиш да сачуваш — одустани и тапни „сачувај годину“.\n'
+    + 'Упиши ОБРИШИ за потврду:';
+  var odg = prompt(poruka, '');
+  if(odg === null) return;
+  var rijec = odg.trim().toUpperCase();
+  if(rijec !== 'ОБРИШИ' && rijec !== 'OBRIŠI' && rijec !== 'OBRISI'){
+    if(rijec !== '') alert('Уписано није ОБРИШИ — ништа није обрисано.');
+    return;
+  }
+  poeni = { ukupno:0, nedelje:{}, zvezde:{}, domac:{}, proslavljeno:[], log:[] };
+  cuvajPoeni();
+  azuriPoeni();
 }
 
 function trofejSVG(boja, glavni){
