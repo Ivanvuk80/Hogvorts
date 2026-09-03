@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Распоред часова 5/4 · Грифиндор</title>
+<meta name="description" content="Распоред часова за одељење 5/4 — Грифиндор. Додај на почетни екран.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#7F0909">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Распоред">
+<style>
+  :root{
+    --grim:#7F0909; --grim-t:#4A0404; --grim-s:#9B1A1A;
+    --zlato:#D3A625; --zlato-s:#F0C75E; --zlato-t:#8A6420;
+    --mastilo:#3D2B16; --seno:#6B4A1B;
+    --p1:#F7EFD8; --p2:#EEDFBB; --p3:#E6D2A4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    min-height:100vh; padding:46px 16px 90px;
+    display:flex; flex-direction:column; align-items:center;
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    color:var(--mastilo); overflow-x:hidden;
+    background:
+      radial-gradient(1100px 460px at 50% -8%, rgba(240,199,94,.10), transparent 62%),
+      linear-gradient(180deg,#0E1226 0%,#1A1338 34%,#2A0F17 66%,#0B0A16 100%);
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+
+  /* ══════ НОЋНО НЕБО ══════ */
+  .nebo{position:fixed;inset:0;z-index:0;pointer-events:none}
+  .mesec{position:fixed;top:6vh;right:7vw;width:78px;height:78px;border-radius:50%;z-index:0;
+    background:radial-gradient(circle at 36% 34%,#FFFBE9,#F0E6BD 55%,#D9CB96);
+    box-shadow:0 0 38px 10px rgba(244,236,200,.26),0 0 110px 36px rgba(244,236,200,.10)}
+  .mesec::before,.mesec::after{content:"";position:absolute;border-radius:50%;background:rgba(190,175,130,.42)}
+  .mesec::before{width:13px;height:13px;top:22px;left:18px}
+  .mesec::after{width:8px;height:8px;top:44px;left:42px}
+  .zamak{position:fixed;left:0;right:0;bottom:0;width:100%;height:200px;z-index:0;opacity:.92;pointer-events:none}
+
+  /* лебдеће свеће */
+  .svece{position:fixed;inset:0;z-index:0;pointer-events:none}
+  .sveca{position:absolute;display:flex;flex-direction:column;align-items:center;animation:lebdi 7s ease-in-out infinite}
+  .sveca .plamen{animation:treperi 1.7s ease-in-out infinite;transform-origin:50% 90%}
+  .sveca .fitilj{width:2px;height:5px;background:#6B4A12;border-radius:1px}
+  .sveca .vosak{width:12px;border-radius:3px 3px 2px 2px;
+    background:linear-gradient(90deg,#E9DFC4,#FBF6E6 45%,#D6CBA9);
+    box-shadow:inset -2px 0 3px rgba(120,100,60,.35)}
+  @keyframes treperi{0%,100%{transform:scale(1) rotate(0)}25%{transform:scale(1.08,.94) rotate(-2deg)}
+    50%{transform:scale(.94,1.1) rotate(1.5deg)}75%{transform:scale(1.04,.97) rotate(-1deg)}}
+  @keyframes lebdi{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+
+  /* лебдећа пера у позадини */
+  .pero-bg{position:fixed;z-index:0;opacity:.5;animation:plovi 13s ease-in-out infinite}
+  .pero-bg.p1{top:16vh;left:6vw}
+  .pero-bg.p2{top:52vh;left:3vw;animation-delay:-4s;transform:scaleX(-1)}
+  .pero-bg.p3{top:38vh;right:5vw;animation-delay:-7s}
+  .pero-bg.p4{bottom:22vh;right:9vw;animation-delay:-10s;transform:scaleX(-1)}
+  @keyframes plovi{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-22px) rotate(6deg)}}
+  .pero-bg.p2,.pero-bg.p4{animation-name:plovi2}
+  @keyframes plovi2{0%,100%{transform:scaleX(-1) translateY(0) rotate(4deg)}50%{transform:scaleX(-1) translateY(-20px) rotate(-6deg)}}
+
+  .iskra{position:fixed;z-index:0;animation:puls 3.2s ease-in-out infinite}
+  .iskra.i1{top:11vh;left:12vw}.iskra.i2{top:27vh;right:17vw;animation-delay:1.1s}
+  .iskra.i3{bottom:19vh;left:17vw;animation-delay:2s}
+  @keyframes puls{0%,100%{opacity:.25;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
+
+  /* ══════ ПЕРГАМЕНТ ══════ */
+  .karta{
+    position:relative;z-index:2;width:100%;max-width:960px;padding:38px 38px 30px;border-radius:16px;
+    background:
+      radial-gradient(340px 240px at 12% 8%, rgba(122,86,32,.10), transparent 70%),
+      radial-gradient(300px 220px at 88% 90%, rgba(122,86,32,.12), transparent 70%),
+      linear-gradient(160deg,var(--p1),var(--p2) 55%,var(--p3));
+    box-shadow:0 0 0 1px rgba(90,62,22,.45),0 0 0 7px rgba(127,9,9,.85),0 0 0 9px var(--zlato),
+      0 30px 74px rgba(0,0,0,.62);
+  }
+  .karta::before{content:"";position:absolute;inset:10px;border:1.5px solid rgba(138,100,32,.5);
+    border-radius:10px;pointer-events:none}
+  .karta::after{content:"";position:absolute;inset:0;border-radius:16px;pointer-events:none;opacity:.5;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='linear' slope='.05'/></feComponentTransfer></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
+  .ugao{position:absolute;width:40px;height:40px;stroke:var(--zlato-t);fill:none;stroke-width:1.5;opacity:.7;z-index:3}
+  .ugao.gl{top:14px;left:14px}.ugao.gd{top:14px;right:14px;transform:scaleX(-1)}
+  .ugao.dl{bottom:14px;left:14px;transform:scaleY(-1)}.ugao.dd{bottom:14px;right:14px;transform:scale(-1)}
+
+  /* ══════ ЗАГЛАВЉЕ ══════ */
+  .hero{display:grid;grid-template-columns:118px 1fr 118px;align-items:center;gap:12px;position:relative;z-index:3}
+  .grb{width:112px;filter:drop-shadow(0 6px 10px rgba(80,50,10,.35))}
+  .desno{justify-self:end;width:112px;animation:snic 5s ease-in-out infinite}
+  @keyframes snic{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(2deg)}}
+  .krilo-l{animation:krl 1.2s ease-in-out infinite alternate;transform-origin:52px 42px}
+  .krilo-d{animation:krd 1.2s ease-in-out infinite alternate;transform-origin:78px 42px}
+  @keyframes krl{from{transform:rotate(0)}to{transform:rotate(7deg)}}
+  @keyframes krd{from{transform:rotate(0)}to{transform:rotate(-7deg)}}
+
+  .naslovi{text-align:center}
+  .nadnaslov{font-size:11.5px;letter-spacing:4.5px;text-transform:uppercase;color:var(--zlato-t);font-weight:700}
+  .nadnaslov .d{color:var(--zlato)}
+  h1{font-size:clamp(25px,4.6vw,42px);letter-spacing:2px;color:var(--grim-t);margin:7px 0 4px;
+    line-height:1.08;text-transform:uppercase;text-shadow:0 1px 0 rgba(255,244,214,.65)}
+  .podnaslov{font-size:17px;color:var(--seno);letter-spacing:.3px}
+  .podnaslov b{color:var(--grim)}
+  .podnaslov .s{color:var(--zlato-t);margin:0 7px}
+  .znacka{display:inline-block;margin-top:11px;padding:5px 18px;border-radius:999px;
+    background:linear-gradient(180deg,var(--grim),var(--grim-t));color:var(--zlato-s);
+    font-size:11px;letter-spacing:3px;text-transform:uppercase;border:1px solid var(--zlato)}
+
+  /* Дамблдоров шешир — виси преко угла картице */
+  .sesir{position:absolute;top:-38px;left:-26px;width:118px;z-index:4;
+    filter:drop-shadow(0 8px 14px rgba(0,0,0,.45));animation:njise 6s ease-in-out infinite;transform-origin:60% 100%}
+  @keyframes njise{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(-3deg)}}
+
+  /* Штапић — виси преко десног угла */
+  .stapic-hero{position:absolute;top:-24px;right:-30px;width:190px;z-index:4;
+    filter:drop-shadow(0 6px 12px rgba(0,0,0,.4));transform:rotate(-16deg)}
+  .varnica{animation:puls 2.6s ease-in-out infinite}
+  .varnica.v2{animation-delay:.7s}.varnica.v3{animation-delay:1.4s}
+
+  .razdelnik{display:flex;align-items:center;gap:12px;margin:20px 4px 16px;position:relative;z-index:3}
+  .razdelnik .l{flex:1;height:2px;background:linear-gradient(90deg,transparent,var(--zlato))}
+  .razdelnik .l:last-child{background:linear-gradient(90deg,var(--zlato),transparent)}
+  .razdelnik svg{flex:none;filter:drop-shadow(0 0 6px rgba(240,199,94,.7))}
+
+  /* ══════ СМЕНЕ ══════ */
+  .smene{display:flex;justify-content:center;margin:0 0 14px;position:relative;z-index:3}
+  .smene button{font-family:inherit;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;
+    padding:9px 22px;border:1.5px solid var(--grim);background:rgba(255,255,255,.45);color:var(--grim);transition:.18s}
+  .smene button:first-child{border-radius:999px 0 0 999px}
+  .smene button:last-child{border-radius:0 999px 999px 0;border-left:none}
+  .smene button[aria-pressed="true"]{background:linear-gradient(180deg,var(--grim),var(--grim-t));color:var(--zlato-s)}
+  .smene button:hover{background:rgba(127,9,9,.14)}
+  .smene button[aria-pressed="true"]:hover{background:linear-gradient(180deg,var(--grim-s),var(--grim))}
+  .print-smena{display:none}
+
+  /* ══════ САДА (ТЕКУЋИ ЧАС) ══════ */
+  .sada{position:relative;z-index:3;margin:0 0 16px;max-width:640px;padding:15px 20px 14px;
+    border-radius:14px;border:2px solid var(--zlato);
+    background:linear-gradient(180deg,rgba(127,9,9,.95),rgba(74,4,4,.95));
+    box-shadow:0 10px 26px rgba(0,0,0,.32),inset 0 0 0 1px rgba(240,199,94,.35);text-align:center}
+  .sada-red{color:var(--zlato-s);font-size:20px;font-weight:700;letter-spacing:.4px;line-height:1.2}
+  .sada-sub{color:#FBEFCF;font-size:14px;margin-top:4px;letter-spacing:.3px}
+  .sada-traka{margin-top:11px;height:7px;border-radius:99px;background:rgba(240,199,94,.16);overflow:hidden}
+  .sada-traka.skri{display:none}
+  .sada-traka span{display:block;height:100%;width:0;border-radius:99px;
+    background:linear-gradient(90deg,var(--zlato-t),var(--zlato) 40%,var(--zlato-s))}
+
+  /* ══════ ТАБЕЛА ══════ */
+  .okvir{position:relative;z-index:3;border:2.5px solid var(--zlato-t);border-radius:13px;overflow:hidden;
+    box-shadow:0 0 0 5px rgba(138,100,32,.13),inset 0 0 0 1px rgba(246,236,208,.5);
+    background:linear-gradient(180deg,var(--p1),var(--p2))}
+  .skrol{overflow-x:auto}
+  table{width:100%;min-width:620px;border-collapse:collapse;table-layout:fixed}
+  col.c1{width:86px}
+  thead th{background:linear-gradient(180deg,#8F0A0A,#650101);color:var(--zlato-s);
+    font-size:13px;letter-spacing:1.6px;text-transform:uppercase;padding:13px 6px;
+    border:1px solid rgba(211,166,37,.35);border-bottom:2.5px solid var(--zlato-t);
+    text-shadow:0 1px 2px rgba(0,0,0,.5)}
+  tbody td{border:1px solid rgba(138,100,32,.28);padding:11px 7px;text-align:center;font-size:15.5px}
+  tbody tr:nth-child(even) td{background:rgba(255,255,255,.22)}
+  tbody tr:hover td{background:rgba(211,166,37,.24);transition:background .18s}
+  tbody tr.trenutno td{background:rgba(211,166,37,.32)}
+  tbody th{border:1px solid rgba(138,100,32,.28);background:linear-gradient(180deg,#F0DFB6,#E2CD9E);
+    color:var(--grim);font-size:21px;font-weight:700;line-height:1.1;padding:9px 4px}
+  tbody tr.trenutno th{box-shadow:inset 0 0 0 2px var(--zlato)}
+  tbody th .vreme{display:block;font-size:10.5px;font-weight:400;letter-spacing:.4px;color:#7A5A22;
+    margin-top:3px;font-variant-numeric:tabular-nums}
+  td.prazno{color:#A38F6B}
+  .grupa{font-size:14px;line-height:1.3}
+
+  /* ══════ ПОЕНИ ЗА ГРИФИНДОР ══════ */
+  .poeni{position:relative;z-index:3;margin:24px auto 0;max-width:640px;padding:18px 22px 16px;
+    border-radius:14px;border:2px solid var(--zlato);
+    background:linear-gradient(180deg,rgba(127,9,9,.95),rgba(74,4,4,.95));
+    box-shadow:0 10px 26px rgba(0,0,0,.32),inset 0 0 0 1px rgba(240,199,94,.35);text-align:center}
+  .poeni h3{color:var(--zlato-s);font-size:13px;letter-spacing:3.5px;text-transform:uppercase;font-weight:700;
+    display:flex;align-items:center;justify-content:center;gap:9px}
+  .poeni h3 svg{width:18px;height:18px;flex:none}
+  .poeni ul{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin-top:13px}
+  .poeni li{display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;
+    background:rgba(240,199,94,.13);border:1px solid rgba(240,199,94,.45);color:#FBEFCF;font-size:13.5px}
+  .poeni li b{color:var(--zlato-s);font-size:15px;font-variant-numeric:tabular-nums}
+  .poeni li svg{width:15px;height:15px;flex:none;fill:var(--zlato)}
+  .poeni .peh{margin-top:13px;font-size:12.5px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,199,94,.75)}
+
+  footer{margin-top:20px;text-align:center;position:relative;z-index:3}
+  .citat{margin:0 auto;max-width:560px;font-style:italic;color:var(--seno);font-size:14.5px;line-height:1.5;
+    display:flex;align-items:center;justify-content:center;gap:12px}
+  .citat svg{width:26px;height:26px;flex:none}
+  .citat .ko{display:block;font-style:normal;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;
+    margin-top:6px;color:#8A6A30}
+
+  /* ══════ ДНЕВНИ ПРИКАЗ (мобилни) ══════ */
+  .dnevno{display:none;position:relative;z-index:3;margin-top:4px}
+  .dan-tabovi{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:14px}
+  .dan-tabovi button{font-family:inherit;font-size:11px;letter-spacing:1px;text-transform:uppercase;
+    cursor:pointer;padding:7px 11px;border-radius:999px;border:1.4px solid var(--grim);
+    background:rgba(255,255,255,.5);color:var(--grim);transition:.15s}
+  .dan-tabovi button[aria-pressed="true"]{background:linear-gradient(180deg,var(--grim),var(--grim-t));
+    color:var(--zlato-s);border-color:var(--zlato)}
+  .dan-kartica{border:2px solid var(--zlato-t);border-radius:13px;overflow:hidden;
+    background:linear-gradient(180deg,var(--p1),var(--p2));
+    box-shadow:0 0 0 4px rgba(138,100,32,.12)}
+  .dan-kartica h4{background:linear-gradient(180deg,#8F0A0A,#650101);color:var(--zlato-s);
+    font-size:13px;letter-spacing:2.5px;text-transform:uppercase;padding:11px 8px;text-align:center;
+    border-bottom:2px solid var(--zlato-t);text-shadow:0 1px 2px rgba(0,0,0,.5)}
+  .dan-kartica .datum{text-align:center;font-size:11px;font-weight:600;letter-spacing:2px;
+    text-transform:uppercase;color:#8A6A30;background:linear-gradient(180deg,#F0DFB6,#E2CD9E);
+    padding:6px 8px 7px;border-bottom:1px dashed rgba(138,100,32,.32)}
+  .dan-kartica ol{list-style:none;margin:0;padding:6px 10px 10px}
+  .dan-kartica li{display:flex;align-items:center;gap:11px;padding:9px 6px;
+    border-bottom:1px dashed rgba(138,100,32,.32)}
+  .dan-kartica li:last-child{border-bottom:none}
+  .dan-kartica li.trenutno{background:rgba(211,166,37,.20)}
+  .dan-kartica li .br{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+    background:linear-gradient(180deg,#F0DFB6,#E2CD9E);border:1px solid rgba(138,100,32,.5);
+    color:var(--grim);font-weight:700;font-size:13px}
+  .dan-kartica li.trenutno .br{background:linear-gradient(180deg,var(--grim),var(--grim-t));
+    color:var(--zlato-s);border-color:var(--zlato)}
+  .dan-kartica li .ime{flex:1;font-size:15px;color:var(--mastilo);line-height:1.25}
+  .dan-kartica li .kad{flex:none;font-size:11.5px;color:#7A5A22;font-variant-numeric:tabular-nums;
+    letter-spacing:.3px}
+
+  @media(max-width:760px){
+    body{padding:26px 10px 60px}
+    .karta{padding:26px 14px 20px}
+    .hero{grid-template-columns:70px 1fr 70px;gap:6px}
+    .grb,.desno{width:68px}
+    .sesir{width:82px;top:-26px;left:-12px}
+    .stapic-hero{width:130px;top:-14px;right:-14px}
+    .mesec{width:56px;height:56px}
+    .pero-bg{display:none}
+    tbody td,tbody th{padding:7px 3px;font-size:12.5px}
+    tbody th{font-size:17px}.grupa{font-size:11.5px}
+    thead th{font-size:10.5px;letter-spacing:.6px;padding:10px 3px}
+    .poeni li{font-size:12px;padding:6px 11px}
+  }
+  /* на уским екранима: дневни приказ уместо табеле */
+  @media(max-width:620px){
+    .okvir{display:none}
+    .dnevno{display:block}
+    .smene{margin-bottom:12px}
+    .smene button{font-size:13px;padding:12px 16px;letter-spacing:1.5px}
+    .sada-red{font-size:22px}
+    .sada-sub{font-size:15px}
+    .dan-tabovi button{font-size:12px;padding:10px 14px}
+    .dan-kartica h4{font-size:15px;letter-spacing:3px;padding:13px 10px}
+    .dan-kartica li{padding:12px 8px;gap:12px}
+    .dan-kartica li .ime{font-size:17.5px}
+    .dan-kartica li .kad{font-size:13.5px}
+    .dan-kartica li .br{width:31px;height:31px;font-size:15px}
+  }
+
+  /* ══════ ШТАМПА (А4, у боји) ══════ */
+  @page{size:A4 portrait;margin:10mm}
+  @media print{
+    html,body{background:#fff!important;padding:0!important;margin:0!important;display:block!important}
+    *{animation:none!important;transition:none!important;
+      -webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+    /* декор из позадине се не штампа */
+    .nebo,.mesec,.zamak,.svece,.pero-bg,.iskra,.smene,.dnevno,.sada{display:none!important}
+    /* коja је смена, пише се умјесто дугмади */
+    .print-smena{display:block!important;text-align:center;font-size:13px;letter-spacing:2.5px;
+      text-transform:uppercase;color:#7A5A22;margin:0 0 10px}
+    /* картица: прави оквир уместо сенке (сенке се не штампају) */
+    .karta{
+      max-width:none!important;width:100%!important;margin:0!important;
+      padding:16mm 12mm 10mm!important;border-radius:0!important;
+      box-shadow:none!important;
+      border:3.5mm solid #7F0909!important;
+      outline:1mm solid #D3A625; outline-offset:-4.4mm;
+      overflow:visible!important; page-break-inside:avoid; break-inside:avoid;
+    }
+    .karta::before{inset:5mm!important;border-color:rgba(138,100,32,.55)!important}
+    .karta::after{display:none!important}
+    /* шешир и штапић УВУЧЕНИ у оквир да их машина не одсече */
+    .sesir{position:absolute!important;top:4mm!important;left:4mm!important;width:24mm!important;
+      transform:rotate(-8deg)!important;filter:none!important}
+    .stapic-hero{position:absolute!important;top:6mm!important;right:3mm!important;width:40mm!important;
+      transform:rotate(-14deg)!important;filter:none!important}
+    .hero{grid-template-columns:26mm 1fr 26mm!important;padding-top:6mm}
+    .grb{width:26mm!important;filter:none!important}
+    .desno{width:26mm!important;filter:none!important}
+    .okvir{display:block!important;box-shadow:none!important;border:1.2mm solid #8A6420!important}
+    .skrol{overflow:visible!important}
+    table{min-width:0!important}
+    thead th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    tbody tr,thead tr{page-break-inside:avoid}
+    .poeni{box-shadow:none!important;page-break-inside:avoid}
+    footer{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <radialGradient id="sjaj" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="rgba(255,196,86,.6)"/><stop offset="55%" stop-color="rgba(255,180,70,.22)"/>
+    <stop offset="100%" stop-color="rgba(255,180,70,0)"/></radialGradient>
+  <linearGradient id="plam" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#FFF3C0"/><stop offset="45%" stop-color="#FFC857"/><stop offset="100%" stop-color="#F07F1F"/></linearGradient>
+  <radialGradient id="zl" cx="36%" cy="30%" r="80%">
+    <stop offset="0%" stop-color="#FFF2C4"/><stop offset="45%" stop-color="#EEC04E"/><stop offset="100%" stop-color="#A8760B"/></radialGradient>
+</defs></svg>
+
+<!-- звезде -->
+<svg class="nebo" aria-hidden="true">
+  <g fill="#FFF4D6">
+    <circle cx="6%" cy="9%" r="1.4" opacity=".8"/><circle cx="18%" cy="4%" r="1"/><circle cx="27%" cy="14%" r="1.6" opacity=".7"/>
+    <circle cx="39%" cy="6%" r="1.1"/><circle cx="47%" cy="17%" r="1.5" opacity=".75"/><circle cx="58%" cy="8%" r="1"/>
+    <circle cx="66%" cy="15%" r="1.7" opacity=".8"/><circle cx="74%" cy="3%" r="1.2"/><circle cx="88%" cy="19%" r="1.4" opacity=".7"/>
+    <circle cx="95%" cy="9%" r="1"/><circle cx="4%" cy="34%" r="1.3" opacity=".7"/><circle cx="12%" cy="46%" r="1"/>
+    <circle cx="22%" cy="58%" r="1.5" opacity=".65"/><circle cx="8%" cy="70%" r="1.1"/><circle cx="93%" cy="42%" r="1.5" opacity=".7"/>
+    <circle cx="85%" cy="63%" r="1.1"/><circle cx="97%" cy="74%" r="1.3" opacity=".6"/><circle cx="33%" cy="86%" r="1"/>
+    <circle cx="63%" cy="90%" r="1.4" opacity=".6"/><circle cx="77%" cy="82%" r="1"/>
+  </g>
+  <g fill="#F0C75E">
+    <circle cx="15%" cy="24%" r="1.6" opacity=".85"/><circle cx="53%" cy="30%" r="1.3" opacity=".7"/>
+    <circle cx="81%" cy="33%" r="1.5" opacity=".8"/><circle cx="44%" cy="72%" r="1.4" opacity=".65"/>
+  </g>
+</svg>
+<div class="mesec" aria-hidden="true"></div>
+
+<svg class="iskra i1" width="24" height="24" viewBox="0 0 26 26" aria-hidden="true"><path d="M13 1l2.6 9.4L25 13l-9.4 2.6L13 25l-2.6-9.4L1 13l9.4-2.6z" fill="#F0C75E"/></svg>
+<svg class="iskra i2" width="17" height="17" viewBox="0 0 26 26" aria-hidden="true"><path d="M13 1l2.6 9.4L25 13l-9.4 2.6L13 25l-2.6-9.4L1 13l9.4-2.6z" fill="#E8D9A0"/></svg>
+<svg class="iskra i3" width="19" height="19" viewBox="0 0 26 26" aria-hidden="true"><path d="M13 1l2.6 9.4L25 13l-9.4 2.6L13 25l-2.6-9.4L1 13l9.4-2.6z" fill="#F0C75E"/></svg>
+
+<!-- лебдећа пера -->
+<svg class="pero-bg p1" width="46" height="46" viewBox="0 0 48 48" aria-hidden="true">
+  <path d="M42 5C27 7 16 15 11 27L7 41l13-5c11-5 20-16 22-31z" fill="#F3E7C8" stroke="#B9A06B" stroke-width="1.2"/>
+  <path d="M8 41l13-15" stroke="#B9A06B" stroke-width="1.3" stroke-linecap="round"/>
+  <path d="M36 11c-7 3-13 8-17 15M39 17c-6 3-11 7-14 13" stroke="#D6C79A" stroke-width="1" fill="none"/>
+</svg>
+<svg class="pero-bg p2" width="38" height="38" viewBox="0 0 48 48" aria-hidden="true">
+  <path d="M42 5C27 7 16 15 11 27L7 41l13-5c11-5 20-16 22-31z" fill="#E9DDBD" stroke="#B9A06B" stroke-width="1.2"/>
+  <path d="M8 41l13-15" stroke="#B9A06B" stroke-width="1.3" stroke-linecap="round"/>
+</svg>
+<svg class="pero-bg p3" width="42" height="42" viewBox="0 0 48 48" aria-hidden="true">
+  <path d="M42 5C27 7 16 15 11 27L7 41l13-5c11-5 20-16 22-31z" fill="#F3E7C8" stroke="#B9A06B" stroke-width="1.2"/>
+  <path d="M8 41l13-15" stroke="#B9A06B" stroke-width="1.3" stroke-linecap="round"/>
+  <path d="M36 11c-7 3-13 8-17 15" stroke="#D6C79A" stroke-width="1" fill="none"/>
+</svg>
+<svg class="pero-bg p4" width="34" height="34" viewBox="0 0 48 48" aria-hidden="true">
+  <path d="M42 5C27 7 16 15 11 27L7 41l13-5c11-5 20-16 22-31z" fill="#E9DDBD" stroke="#B9A06B" stroke-width="1.2"/>
+  <path d="M8 41l13-15" stroke="#B9A06B" stroke-width="1.3" stroke-linecap="round"/>
+</svg>
+
+<!-- лебдеће свеће -->
+<div class="svece" aria-hidden="true">
+  <div class="sveca" style="left:4%;top:10vh;animation-delay:-1s">
+    <svg class="plamen" width="14" height="21" viewBox="0 0 20 30"><circle cx="10" cy="12" r="10" fill="url(#sjaj)"/><path d="M10 3c3 4.5 6 7 6 11a6 6 0 01-12 0c0-4 3-6.5 6-11z" fill="url(#plam)"/></svg>
+    <span class="fitilj"></span><span class="vosak" style="height:60px"></span></div>
+  <div class="sveca" style="left:11%;top:22vh;animation-delay:-3.5s">
+    <svg class="plamen" width="12" height="18" viewBox="0 0 20 30"><circle cx="10" cy="12" r="10" fill="url(#sjaj)"/><path d="M10 3c3 4.5 6 7 6 11a6 6 0 01-12 0c0-4 3-6.5 6-11z" fill="url(#plam)"/></svg>
+    <span class="fitilj"></span><span class="vosak" style="height:40px"></span></div>
+  <div class="sveca" style="left:80%;top:6vh;animation-delay:-2s">
+    <svg class="plamen" width="14" height="21" viewBox="0 0 20 30"><circle cx="10" cy="12" r="10" fill="url(#sjaj)"/><path d="M10 3c3 4.5 6 7 6 11a6 6 0 01-12 0c0-4 3-6.5 6-11z" fill="url(#plam)"/></svg>
+    <span class="fitilj"></span><span class="vosak" style="height:66px"></span></div>
+  <div class="sveca" style="left:90%;top:19vh;animation-delay:-5s">
+    <svg class="plamen" width="12" height="18" viewBox="0 0 20 30"><circle cx="10" cy="12" r="10" fill="url(#sjaj)"/><path d="M10 3c3 4.5 6 7 6 11a6 6 0 01-12 0c0-4 3-6.5 6-11z" fill="url(#plam)"/></svg>
+    <span class="fitilj"></span><span class="vosak" style="height:44px"></span></div>
+  <div class="sveca" style="left:96%;top:36vh;animation-delay:-4s">
+    <svg class="plamen" width="11" height="17" viewBox="0 0 20 30"><circle cx="10" cy="12" r="10" fill="url(#sjaj)"/><path d="M10 3c3 4.5 6 7 6 11a6 6 0 01-12 0c0-4 3-6.5 6-11z" fill="url(#plam)"/></svg>
+    <span class="fitilj"></span><span class="vosak" style="height:32px"></span></div>
+</div>
+
+<!-- силуета замка -->
+<svg class="zamak" viewBox="0 0 1440 200" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+  <g fill="#080C1C">
+    <rect x="0" y="160" width="1440" height="40"/>
+    <rect x="60" y="106" width="28" height="54"/><polygon points="50,108 74,74 98,108"/>
+    <rect x="180" y="92" width="34" height="68"/><polygon points="170,94 197,48 224,94"/>
+    <rect x="330" y="84" width="26" height="76"/><polygon points="321,86 343,54 365,86"/>
+    <rect x="470" y="118" width="30" height="42"/><polygon points="462,120 485,88 508,120"/>
+    <rect x="640" y="60" width="52" height="100"/><polygon points="626,62 666,6 706,62"/><polygon points="661,6 666,0 671,6"/>
+    <rect x="700" y="106" width="34" height="54"/><polygon points="692,108 717,76 742,108"/>
+    <rect x="596" y="112" width="32" height="48"/><polygon points="588,114 612,82 636,114"/>
+    <rect x="880" y="120" width="28" height="40"/><polygon points="872,122 894,92 916,122"/>
+    <rect x="1010" y="88" width="44" height="72"/><polygon points="1000,90 1032,42 1064,90"/>
+    <rect x="1160" y="108" width="36" height="52"/><polygon points="1152,110 1178,74 1204,110"/>
+    <rect x="1330" y="96" width="40" height="64"/><polygon points="1321,98 1350,56 1379,98"/>
+  </g>
+  <g fill="#FFD97A" opacity=".9">
+    <rect x="70" y="122" width="4" height="7"/><rect x="78" y="136" width="4" height="7"/>
+    <rect x="192" y="104" width="4" height="7"/><rect x="200" y="124" width="4" height="7"/>
+    <rect x="338" y="98" width="4" height="7"/><rect x="346" y="120" width="4" height="7"/>
+    <rect x="478" y="130" width="4" height="6"/><rect x="606" y="124" width="4" height="6"/>
+    <rect x="660" y="80" width="4" height="8"/><rect x="668" y="100" width="4" height="8"/>
+    <rect x="660" y="122" width="4" height="8"/><rect x="712" y="122" width="4" height="7"/>
+    <rect x="888" y="132" width="4" height="6"/>
+    <rect x="1024" y="108" width="4" height="7"/><rect x="1038" y="130" width="4" height="7"/>
+    <rect x="1172" y="124" width="4" height="7"/><rect x="1344" y="114" width="4" height="7"/>
+    <rect x="1352" y="134" width="4" height="7"/>
+  </g>
+</svg>
+
+<!-- ══════════ КАРТИЦА ══════════ -->
+<main class="karta">
+  <svg class="ugao gl" viewBox="0 0 40 40"><path d="M2 38V9a7 7 0 017-7h29"/><path d="M8 38V14a6 6 0 016-6h24"/><circle cx="9" cy="9" r="2.4" fill="#D3A625" stroke="none"/></svg>
+  <svg class="ugao gd" viewBox="0 0 40 40"><path d="M2 38V9a7 7 0 017-7h29"/><path d="M8 38V14a6 6 0 016-6h24"/><circle cx="9" cy="9" r="2.4" fill="#D3A625" stroke="none"/></svg>
+  <svg class="ugao dl" viewBox="0 0 40 40"><path d="M2 38V9a7 7 0 017-7h29"/><path d="M8 38V14a6 6 0 016-6h24"/><circle cx="9" cy="9" r="2.4" fill="#D3A625" stroke="none"/></svg>
+  <svg class="ugao dd" viewBox="0 0 40 40"><path d="M2 38V9a7 7 0 017-7h29"/><path d="M8 38V14a6 6 0 016-6h24"/><circle cx="9" cy="9" r="2.4" fill="#D3A625" stroke="none"/></svg>
+
+  <!-- Дамблдоров шешир -->
+  <svg class="sesir" viewBox="0 0 120 120" role="img" aria-label="Чаробњачки шешир">
+    <ellipse cx="60" cy="99" rx="52" ry="13" fill="#2B2456"/>
+    <ellipse cx="60" cy="96" rx="52" ry="13" fill="#3B3273"/>
+    <path d="M60 8c-6 12-10 30-14 46-3 12-6 22-10 32 8 5 40 5 48 0-4-10-7-20-10-32-4-16-8-34-14-46z" fill="#4A3F8C"/>
+    <path d="M60 8c-4 12-7 30-10 46-2 12-5 22-8 32 5 3 14 4 18 4-3-10-5-20-6-32-2-16-1-34 6-50z" fill="#5A4EA8" opacity=".7"/>
+    <path d="M36 86c9 5 39 5 48 0l2 6c-9 5-43 5-52 0z" fill="#332B66"/>
+    <path d="M36 84c8-3 40-3 48 0l2 5c-9-4-43-4-52 0z" fill="#7F0909"/>
+    <g fill="#F0C75E">
+      <path d="M62 24l1.6 5 5 1.6-5 1.6-1.6 5-1.6-5-5-1.6 5-1.6z"/>
+      <path d="M48 52l1.2 3.6 3.6 1.2-3.6 1.2-1.2 3.6-1.2-3.6-3.6-1.2 3.6-1.2z" opacity=".9"/>
+      <path d="M74 62l1 3 3 1-3 1-1 3-1-3-3-1 3-1z" opacity=".8"/>
+      <circle cx="55" cy="38" r="1.6" opacity=".8"/><circle cx="70" cy="46" r="1.4" opacity=".7"/>
+      <circle cx="52" cy="70" r="1.5" opacity=".75"/>
+    </g>
+    <ellipse cx="60" cy="86" rx="26" ry="4" fill="#D3A625" opacity=".25"/>
+  </svg>
+
+  <!-- Штапић са варницама -->
+  <svg class="stapic-hero" viewBox="0 0 200 60" role="img" aria-label="Чаробни штапић">
+    <rect x="70" y="30" width="112" height="5" rx="2.5" fill="#4A2F16" transform="rotate(-4 126 32)"/>
+    <rect x="164" y="27" width="30" height="9" rx="4.5" fill="#2E1C0C" transform="rotate(-4 179 31)"/>
+    <circle cx="160" cy="30" r="2.6" fill="#6B4A1B"/>
+    <circle cx="70" cy="38" r="6" fill="url(#sjaj)"/>
+    <circle cx="70" cy="38" r="3.4" fill="#FFF3C4"/>
+    <g fill="#F0C75E">
+      <path class="varnica" d="M46 30l3.2-4.4 1.1 4.4 4.4 1.1-4.4 1.1-1.1 4.4-3.2-4.4-4.4-1.1z"/>
+      <path class="varnica v2" d="M26 16l2-2.8.7 2.8 2.8.7-2.8.7-.7 2.8-2-2.8-2.8-.7z"/>
+      <path class="varnica v3" d="M20 44l1.7-2.4.6 2.4 2.4.6-2.4.6-.6 2.4-1.7-2.4-2.4-.6z"/>
+      <circle class="varnica v2" cx="40" cy="50" r="1.8"/><circle class="varnica" cx="12" cy="30" r="1.5"/>
+      <circle class="varnica v3" cx="54" cy="12" r="1.4"/>
+    </g>
+  </svg>
+
+  <header class="hero">
+    <!-- ГРБ СА ЛАВОМ -->
+    <svg class="grb" viewBox="0 0 140 150" role="img" aria-label="Грб Грифиндора">
+      <path d="M70 10C88 18 108 21 124 21v41c0 33-23 54-54 74C39 116 16 95 16 62V21c16 0 36-3 54-11z"
+            fill="#7F0909" stroke="#D3A625" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M70 16.5c16 7 34 10 48 10.3V61.5C118 91 98 110 70 128.5 42 110 22 91 22 61.5V26.8c14-.3 32-3.3 48-10.3z"
+            fill="none" stroke="#F0C75E" stroke-width="1.4" opacity=".8"/>
+      <path d="M34 30l1.7 4 4 1.7-4 1.7-1.7 4-1.7-4-4-1.7 4-1.7z" fill="#F0C75E"/>
+      <path d="M106 30l1.7 4 4 1.7-4 1.7-1.7 4-1.7-4-4-1.7 4-1.7z" fill="#F0C75E"/>
+      <g fill="#A9711B">
+        <circle cx="90" cy="60" r="10.5"/><circle cx="86.2" cy="71.7" r="10.5"/><circle cx="76.2" cy="76.2" r="10.5"/>
+        <circle cx="63.8" cy="76.2" r="10.5"/><circle cx="53.8" cy="71.7" r="10.5"/><circle cx="50" cy="60" r="10.5"/>
+        <circle cx="53.8" cy="48.3" r="10.5"/><circle cx="63.8" cy="43.8" r="10.5"/><circle cx="76.2" cy="43.8" r="10.5"/>
+        <circle cx="86.2" cy="48.3" r="10.5"/><circle cx="70" cy="60" r="22.5"/>
+      </g>
+      <circle cx="59.5" cy="46.5" r="5" fill="#E6B94D"/><circle cx="59.5" cy="46.5" r="2.3" fill="#8F5C10"/>
+      <circle cx="80.5" cy="46.5" r="5" fill="#E6B94D"/><circle cx="80.5" cy="46.5" r="2.3" fill="#8F5C10"/>
+      <circle cx="70" cy="60" r="16.5" fill="#E6B94D"/>
+      <circle cx="63.8" cy="57.5" r="2" fill="#4A3008"/><circle cx="76.2" cy="57.5" r="2" fill="#4A3008"/>
+      <ellipse cx="70" cy="65.5" rx="6.2" ry="4.8" fill="#F4D98D"/>
+      <path d="M66.6 62.8h6.8L70 67.4z" fill="#4A3008" stroke="#4A3008" stroke-width="1" stroke-linejoin="round"/>
+      <path d="M70 67.4v1.7m0 0c-1.2 1.5-3.2 1.6-4.4.3M70 69.1c1.2 1.5 3.2 1.6 4.4.3"
+            fill="none" stroke="#4A3008" stroke-width="1.3" stroke-linecap="round"/>
+      <polygon points="30,120 16,120 22,126 16,132 30,132" fill="#5C0000" stroke="#D3A625" stroke-width="1.6" stroke-linejoin="round"/>
+      <polygon points="110,120 124,120 118,126 124,132 110,132" fill="#5C0000" stroke="#D3A625" stroke-width="1.6" stroke-linejoin="round"/>
+      <rect x="28" y="118" width="84" height="16" rx="2.5" fill="#5C0000" stroke="#D3A625" stroke-width="1.6"/>
+      <text x="70" y="129.6" text-anchor="middle" font-family="Georgia,serif" font-weight="700"
+            font-size="9.5" letter-spacing="1" fill="#F0C75E">ГРИФИНДОР</text>
+    </svg>
+
+    <div class="naslovi">
+      <div class="nadnaslov"><span class="d">✦</span> Хогвортс · Школа за чаробњаштво <span class="d">✦</span></div>
+      <h1>Распоред часова</h1>
+      <div class="podnaslov">Одељење <b>5/4</b><span class="s">·</span>Важи од <b>1. 9. 2026.</b></div>
+      <span class="znacka">Дом Грифиндор</span>
+    </div>
+
+    <!-- ЗЛАТНА ЗВРЧКА -->
+    <svg class="desno" viewBox="0 0 130 76" role="img" aria-label="Златна зврчка">
+      <g class="krilo-l" fill="#F7EFDC" stroke="#B9A06B" stroke-width="1" stroke-linejoin="round">
+        <path d="M52 38C40 26 24 20 6 22c4 7 14 13 24 14 8 1 16 0 22 2z"/>
+        <path d="M52 40C40 34 24 34 8 40c6 5 17 7 27 5 7-1 13-3 17-5z"/>
+      </g>
+      <g class="krilo-d" fill="#F7EFDC" stroke="#B9A06B" stroke-width="1" stroke-linejoin="round">
+        <path d="M78 38c12-12 28-18 46-16-4 7-14 13-24 14-8 1-16 0-22 2z"/>
+        <path d="M78 40c12-6 28-6 44 0-6 5-17 7-27 5-7-1-13-3-17-5z"/>
+      </g>
+      <circle cx="65" cy="39" r="15" fill="url(#zl)" stroke="#8A6420" stroke-width="1.6"/>
+      <path d="M50 39h30M65 24v30" stroke="#A8760B" stroke-width="1.1" opacity=".7"/>
+      <ellipse cx="59" cy="33" rx="5" ry="3.4" fill="#FFF6D8" opacity=".75" transform="rotate(-25 59 33)"/>
+    </svg>
+  </header>
+
+  <div class="razdelnik">
+    <span class="l"></span>
+    <svg width="26" height="26" viewBox="0 0 48 48" aria-hidden="true">
+      <path d="M42 5C27 7 16 15 11 27L7 41l13-5c11-5 20-16 22-31z" fill="#D3A625" stroke="#7F0909" stroke-width="1.6"/>
+      <path d="M8 41l13-15" stroke="#7F0909" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span class="l"></span>
+  </div>
+
+  <!-- СМЕНЕ: аутоматски по недјељама (од 07.09.2026 прва, па наизмјенично),
+       ручни избор се памти само за тренутну недјељу -->
+  <div class="smene">
+    <button id="b1" aria-pressed="false" onclick="smena(1)">Прва смена · 7:45</button>
+    <button id="b2" aria-pressed="false" onclick="smena(2)">Друга смена · 13:30</button>
+  </div>
+  <div class="print-smena" id="printSmena"></div>
+
+  <!-- ТЕКУЋИ ЧАС -->
+  <section class="sada" id="sada" aria-live="polite">
+    <div class="sada-red" id="sadaRed">—</div>
+    <div class="sada-sub" id="sadaSub"></div>
+    <div class="sada-traka" id="sadaTraka"><span id="sadaBar"></span></div>
+  </section>
+
+  <div class="okvir"><div class="skrol">
+    <table>
+      <colgroup><col class="c1"><col><col><col><col><col></colgroup>
+      <thead>
+        <tr><th>Час</th><th>Понедељак</th><th>Уторак</th><th>Среда</th><th>Четвртак</th><th>Петак</th></tr>
+      </thead>
+      <tbody>
+        <tr data-cas="1">
+          <th>1<span class="vreme" data-cas="1"></span></th>
+          <td>Српски</td><td>Физичко</td><td>Српски</td><td>Историја</td><td>Биологија</td>
+        </tr>
+        <tr data-cas="2">
+          <th>2<span class="vreme" data-cas="2"></span></th>
+          <td>Математика</td><td>Математика</td><td>Енглески</td><td>Математика</td><td>Српски</td>
+        </tr>
+        <tr data-cas="3">
+          <th>3<span class="vreme" data-cas="3"></span></th>
+          <td>Техничко</td><td class="grupa">Веронаука / Грађанско</td><td>Физичко</td><td>Српски</td><td>Музичко</td>
+        </tr>
+        <tr data-cas="4">
+          <th>4<span class="vreme" data-cas="4"></span></th>
+          <td>Техничко</td><td>Биологија</td><td>Математика</td><td>Физичко</td><td>Географија</td>
+        </tr>
+        <tr data-cas="5">
+          <th>5<span class="vreme" data-cas="5"></span></th>
+          <td>Енглески</td><td>Српски</td><td class="grupa">Немачки / Француски</td><td>Музичко</td><td class="grupa">Немачки / Француски</td>
+        </tr>
+        <tr data-cas="6">
+          <th>6<span class="vreme" data-cas="6"></span></th>
+          <td class="prazno">—</td><td>Информатика</td><td>Ликовно</td><td>Информатика</td><td class="prazno">—</td>
+        </tr>
+        <tr data-cas="7">
+          <th>7<span class="vreme" data-cas="7"></span></th>
+          <td class="prazno">—</td><td class="prazno">—</td><td>Ликовно</td><td class="prazno">—</td><td class="prazno">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div></div>
+
+  <!-- ДНЕВНИ ПРИКАЗ (мобилни) -->
+  <div class="dnevno" id="dnevno">
+    <div class="dan-tabovi" id="danTabovi"></div>
+    <div class="dan-kartica" id="danKartica"></div>
+  </div>
+
+  <!-- ПОЕНИ ЗА ГРИФИНДОР -->
+  <section class="poeni">
+    <h3>
+      <svg viewBox="0 0 24 24" fill="#F0C75E" aria-hidden="true"><path d="M12 2l2.6 5.9L21 8.6l-4.7 4.3 1.3 6.4L12 16.2 6.4 19.3l1.3-6.4L3 8.6l6.4-.7z"/></svg>
+      Поени за Грифиндор
+      <svg viewBox="0 0 24 24" fill="#F0C75E" aria-hidden="true"><path d="M12 2l2.6 5.9L21 8.6l-4.7 4.3 1.3 6.4L12 16.2 6.4 19.3l1.3-6.4L3 8.6l6.4-.7z"/></svg>
+    </h3>
+    <ul>
+      <li><svg viewBox="0 0 24 24"><path d="M20 3c-7 1-11 5-13 9l-2 5 5-2c4-2 8-6 10-12z"/></svg>Сваки урађени домаћи <b>+10</b></li>
+      <li><svg viewBox="0 0 24 24"><path d="M12 2l2.6 5.9L21 8.6l-4.7 4.3 1.3 6.4L12 16.2 6.4 19.3l1.3-6.4L3 8.6l6.4-.7z"/></svg>Петица на тесту <b>+20</b></li>
+      <li><svg viewBox="0 0 24 24"><path d="M4 4h11a3 3 0 013 3v13H7a3 3 0 01-3-3z"/></svg>Прочитана књига <b>+20</b></li>
+      <li><svg viewBox="0 0 24 24"><path d="M12 21s-8-4.6-8-10a4.6 4.6 0 018-3 4.6 4.6 0 018 3c0 5.4-8 10-8 10z"/></svg>Помоћ другу <b>+10</b></li>
+    </ul>
+    <p class="peh">✦ Ко скупи највише — осваја Школски пехар ✦</p>
+  </section>
+
+  <footer>
+    <p class="citat">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M42 5C27 7 16 15 11 27L7 41l13-5c11-5 20-16 22-31z" fill="#D3A625" stroke="#7F0909" stroke-width="1.6"/>
+        <path d="M8 41l13-15" stroke="#7F0909" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span>„Помоћ ће увек бити пружена онима који је затраже.“
+        <span class="ko">Албус Дамблдор</span></span>
+    </p>
+  </footer>
+</main>
+
+<script>
+var DANI = ['Понедељак','Уторак','Среда','Четвртак','Петак'];
+var DANI_M = ['понедељак','уторак','среда','четвртак','петак'];
+var MES = ['јануар','фебруар','март','април','мај','јун','јул','август','септембар','октобар','новембар','децембар'];
+var PLAN = {
+  'Понедељак':['Српски','Математика','Техничко','Техничко','Енглески',null,null],
+  'Уторак':   ['Физичко','Математика','Веронаука / Грађанско','Биологија','Српски','Информатика',null],
+  'Среда':    ['Српски','Енглески','Физичко','Математика','Немачки / Француски','Ликовно','Ликовно'],
+  'Четвртак': ['Историја','Математика','Српски','Физичко','Музичко','Информатика',null],
+  'Петак':    ['Биологија','Српски','Музичко','Географија','Немачки / Француски',null,null]
+};
+
+/* од овог понедељка важи: 1. смена, па наизмјенично сваке недјеље */
+var REF_NED = new Date(2026, 8, 7);
+var trenutnaSmena = 1, trenutniDan = null;
+
+/* сигурно складиште (ради и у контекстима без localStorage) */
+var store = {
+  get: function(k){ try{ return window.localStorage.getItem(k); }catch(e){ return null; } },
+  set: function(k,v){ try{ window.localStorage.setItem(k,v); }catch(e){} }
+};
+
+function fmt(x){ var h=Math.floor(x/60), m=x%60; return (h<10?'0':'')+h+':'+(m<10?'0':'')+m; }
+
+/* часови (почетак/крај у минутима) за изабрану смјену */
+function slotovi(n){
+  var p = n===1 ? [7,45] : [13,30], t = p[0]*60+p[1], r = [];
+  for(var i=1;i<=7;i++){ var kraj=t+45; r.push({s:t, e:kraj}); t = kraj + (i===2?20:5); }
+  return r;
+}
+function vremena(n){ var s=slotovi(n), r=[]; for(var i=0;i<7;i++) r.push(fmt(s[i].s)+'–'+fmt(s[i].e)); return r; }
+
+/* ══════ СМЕНЕ ПО НЕДЉЕЉАМА ══════ */
+function ponedeljakOd(d){
+  var x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  var w = x.getDay(); if(w===0) w=7;
+  x.setDate(x.getDate() - (w-1));
+  return x;
+}
+function klicaNedelje(){ var d=ponedeljakOd(new Date()); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+function autoSmena(){
+  var m = ponedeljakOd(new Date());
+  var diff = Math.round((m - REF_NED) / 604800000);
+  return (diff % 2 === 0) ? 1 : 2;
+}
+/* ручни избор важи само за недјељу у којој је урађен */
+function ucitajSmenu(){
+  var t = store.get('raspored.smena');
+  if(t){ try{ var o=JSON.parse(t); if(o && o.k===klicaNedelje() && (o.s===1 || o.s===2)) return o.s; }catch(e){} }
+  return autoSmena();
+}
+
+function azuriVremena(){
+  var v = vremena(trenutnaSmena);
+  for(var i=1;i<=7;i++){
+    var el = document.querySelector('.vreme[data-cas="'+i+'"]');
+    if(el) el.textContent = v[i-1];
+  }
+}
+
+function smena(n){
+  trenutnaSmena = n;
+  store.set('raspored.smena', JSON.stringify({k:klicaNedelje(), s:n}));
+  azuriVremena();
+  document.getElementById('b1').setAttribute('aria-pressed', n===1);
+  document.getElementById('b2').setAttribute('aria-pressed', n===2);
+  var ps = document.getElementById('printSmena');
+  if(ps) ps.textContent = n===1 ? 'Прва смена · 7:45' : 'Друга смена · 13:30';
+  prikaziDan(trenutniDan);
+}
+
+/* ══════ ДНЕВНИ ПРИКАЗ ══════ */
+function prikaziDan(dan){
+  trenutniDan = dan;
+  var v = vremena(trenutnaSmena), casovi = PLAN[dan] || [];
+
+  var danas = new Date().getDay(); if(danas===0) danas=7;
+  var cilj = {'Понедељак':1,'Уторак':2,'Среда':3,'Четвртак':4,'Петак':5}[dan];
+  var diff = (cilj - danas + 7) % 7;
+  var dShow = new Date(); dShow.setDate(dShow.getDate() + diff);
+  var datumStr = (diff===0 ? 'Данас · ' : 'До ') + DANI_M[DANI.indexOf(dan)] + ' · ' + dShow.getDate()+'. ' + MES[dShow.getMonth()];
+
+  var html = '<h4>'+dan+'</h4><div class="datum">'+datumStr+'</div><ol>';
+  var ima = false;
+  for(var i=0;i<7;i++){
+    if(!casovi[i]) continue;
+    ima = true;
+    html += '<li data-cas="'+(i+1)+'"><span class="br">'+(i+1)+'</span><span class="ime">'+casovi[i]+
+            '</span><span class="kad">'+v[i]+'</span></li>';
+  }
+  if(!ima) html += '<li><span class="ime">Нема часова.</span></li>';
+  html += '</ol>';
+  document.getElementById('danKartica').innerHTML = html;
+
+  var dugmad = document.querySelectorAll('#danTabovi button');
+  for(var j=0;j<dugmad.length;j++)
+    dugmad[j].setAttribute('aria-pressed', dugmad[j].dataset.dan === dan);
+
+  azuriSada();
+}
+
+/* ══════ ТЕКУЋИ ЧАС ══════ */
+/* чисто стање (без DOM-а) — лако се тестира */
+function sadaStanje(datum, smena){
+  var D = new Date(datum);
+  var dan = D.getDay();
+  var slots = slotovi(smena);
+  var st = { tip:'', idx:-1, ostatak:0, procenat:0, razlika:0, redni:-1, poslednji:-1 };
+  if(dan < 1 || dan > 5){ st.tip = 'vikend'; return st; }
+  st.redni = dan - 1;
+  var casovi = PLAN[DANI[st.redni]];
+  for(var i=0;i<7;i++) if(casovi[i]) st.poslednji = i;
+  var mini = D.getHours()*60 + D.getMinutes();
+  if(mini < slots[0].s){ st.tip='pre'; st.razlika = slots[0].s - mini; return st; }
+  if(mini >= slots[st.poslednji].e){ st.tip='gotovo'; return st; }
+  for(var j=0;j<=st.poslednji;j++){
+    if(mini >= slots[j].s && mini < slots[j].e){
+      st.tip='u-toku'; st.idx=j; st.ostatak=slots[j].e-mini;
+      st.procenat=(mini-slots[j].s)/(slots[j].e-slots[j].s)*100;
+      return st;
+    }
+    if(mini >= slots[j].e && mini < slots[j+1].s){
+      st.tip='pauza'; st.idx=j; st.razlika=slots[j+1].s-mini; return st;
+    }
+  }
+  st.tip='gotovo'; return st;
+}
+
+function azuriSada(){
+  var red = document.getElementById('sadaRed'), sub = document.getElementById('sadaSub');
+  var traka = document.getElementById('sadaTraka'), bar = document.getElementById('sadaBar');
+  var st = sadaStanje(new Date(), trenutnaSmena);
+  var ime = trenutnaSmena===1 ? 'Прва смена' : 'Друга смена';
+  var slots = slotovi(trenutnaSmena);
+  var pokaži = function(p){ traka.classList.remove('skri'); bar.style.width = p+'%'; };
+  var sakrij = function(){ traka.classList.add('skri'); bar.style.width = '0%'; };
+
+  function oznaci(idx1){
+    var rows = document.querySelectorAll('tbody tr');
+    for(var r=0;r<rows.length;r++)
+      rows[r].classList.toggle('trenutno', idx1>0 && parseInt(rows[r].dataset.cas,10)===idx1);
+    var istiDan = (st.redni>=0 && trenutniDan===DANI[st.redni]);
+    var lis = document.querySelectorAll('#danKartica li[data-cas]');
+    for(var l=0;l<lis.length;l++)
+      lis[l].classList.toggle('trenutno', istiDan && idx1>0 && parseInt(lis[l].dataset.cas,10)===idx1);
+  }
+
+  if(st.tip === 'vikend'){
+    red.textContent = 'Викенд ✦';
+    sub.textContent = 'Видимо се понедељак · '+ime+' · први час: '+PLAN['Понедељак'][0]+' у '+fmt(slots[0].s);
+    sakrij(); oznaci(0); return;
+  }
+  var casovi = PLAN[DANI[st.redni]];
+  if(st.tip === 'pre'){
+    red.textContent = 'Данас почиње у '+fmt(slots[0].s);
+    sub.textContent = (st.razlika<=120 ? 'За '+st.razlika+' мин · ' : '') + 'Први час: '+casovi[0]+' · '+ime;
+    sakrij(); oznaci(0); return;
+  }
+  if(st.tip === 'gotovo'){
+    red.textContent = 'Готово! Видимо се сутра ✦';
+    var sutra = (st.redni+1) % 5;
+    sub.textContent = (st.redni===4)
+      ? 'Сутра је викенд · до понедељка'
+      : 'Први час сутра: '+PLAN[DANI[sutra]][0]+' у '+fmt(slots[0].s);
+    sakrij(); oznaci(0); return;
+  }
+  if(st.tip === 'u-toku'){
+    red.textContent = 'Сада: '+casovi[st.idx];
+    sub.textContent = 'Још '+st.ostatak+' мин · крај у '+fmt(slots[st.idx].e);
+    pokaži(st.procenat); oznaci(st.idx+1); return;
+  }
+  if(st.tip === 'pauza'){
+    red.textContent = 'Пауза';
+    sub.textContent = st.razlika+' мин · следеће: '+casovi[st.idx+1]+' у '+fmt(slots[st.idx+1].s);
+    pokaži(100); oznaci(st.idx+2); return;
+  }
+}
+
+/* ══════ ПОКРЕТАЊЕ ══════ */
+(function init(){
+  var tabovi = document.getElementById('danTabovi'), html = '';
+  for(var i=0;i<DANI.length;i++)
+    html += '<button data-dan="'+DANI[i]+'" onclick="prikaziDan(this.dataset.dan)">'+DANI[i].slice(0,3)+'</button>';
+  tabovi.innerHTML = html;
+
+  var d = new Date().getDay();
+  trenutniDan = (d>=1 && d<=5) ? DANI[d-1] : DANI[0];
+  smena(ucitajSmenu());
+
+  setInterval(azuriSada, 30000);
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) azuriSada(); });
+})();
+
+/* service worker — ради offline на Androidu */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>

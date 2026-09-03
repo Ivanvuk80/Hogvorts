@@ -1,0 +1,17 @@
+{
+  "name": "Распоред 5/4 · Грифиндор",
+  "short_name": "Распоред",
+  "description": "Распоред часова за одељење 5/4 — дан, текући час и преостало време.",
+  "lang": "sr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0E1226",
+  "theme_color": "#7F0909",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
