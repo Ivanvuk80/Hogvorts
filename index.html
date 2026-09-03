@@ -36,7 +36,7 @@
   .nebo{position:fixed;inset:0;z-index:0;pointer-events:none}
   .mesec{position:fixed;top:6vh;right:7vw;width:78px;height:78px;border-radius:50%;z-index:0;
     background:radial-gradient(circle at 36% 34%,#FFFBE9,#F0E6BD 55%,#D9CB96);
-    box-shadow:0 0 38px 10px rgba(244,236,200,.26),0 0 110px 36px rgba(244,236,200,.10)}
+    box-shadow:0 0 34px 8px rgba(244,236,200,.22),0 0 70px 24px rgba(244,236,200,.08)}
   .mesec::before,.mesec::after{content:"";position:absolute;border-radius:50%;background:rgba(190,175,130,.42)}
   .mesec::before{width:13px;height:13px;top:22px;left:18px}
   .mesec::after{width:8px;height:8px;top:44px;left:42px}
@@ -77,7 +77,7 @@
       radial-gradient(300px 220px at 88% 90%, rgba(122,86,32,.12), transparent 70%),
       linear-gradient(160deg,var(--p1),var(--p2) 55%,var(--p3));
     box-shadow:0 0 0 1px rgba(90,62,22,.45),0 0 0 7px rgba(127,9,9,.85),0 0 0 9px var(--zlato),
-      0 30px 74px rgba(0,0,0,.62);
+      0 16px 40px rgba(0,0,0,.55);
   }
   .karta::before{content:"";position:absolute;inset:10px;border:1.5px solid rgba(138,100,32,.5);
     border-radius:10px;pointer-events:none}
@@ -147,6 +147,8 @@
   .sada-traka.skri{display:none}
   .sada-traka span{display:block;height:100%;width:0;border-radius:99px;
     background:linear-gradient(90deg,var(--zlato-t),var(--zlato) 40%,var(--zlato-s))}
+
+  .pregled{display:none}
 
   /* ══════ ТАБЕЛА ══════ */
   .okvir{position:relative;z-index:3;border:2.5px solid var(--zlato-t);border-radius:13px;overflow:hidden;
@@ -242,6 +244,13 @@
   @media(max-width:620px){
     .okvir{display:none}
     .dnevno{display:block}
+    .pregled{display:block;margin:0 auto 12px;font-family:inherit;font-size:11.5px;
+      letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;padding:8px 18px;
+      border-radius:999px;border:1.4px solid var(--zlato-t);
+      background:rgba(255,255,255,.5);color:var(--zlato-t)}
+    .pregled:active{background:rgba(211,166,37,.25)}
+    body.tabela .okvir{display:block}
+    body.tabela .dnevno{display:none}
     .smene{margin-bottom:12px}
     .smene button{font-size:13px;padding:12px 16px;letter-spacing:1.5px}
     .sada-red{font-size:22px}
@@ -254,6 +263,77 @@
     .dan-kartica li .br{width:31px;height:31px;font-size:15px}
   }
 
+  /* за оне којима систем каже „мање покрета“ — све лебђење заустављено */
+  @media (prefers-reduced-motion: reduce){
+    .sveca,.sveca .plamen,.pero-bg,.iskra,.desno,.krilo-l,.krilo-d,.sesir,.varnica{animation:none!important}
+  }
+
+  /* ══════ ПОЕНИ — РАЧУНИЦА ══════ */
+  .poeni-ukupno{margin-top:12px}
+  .poeni-broj{font-size:36px;font-weight:700;color:var(--zlato-s);line-height:1;font-variant-numeric:tabular-nums}
+  .poeni-lbl{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,199,94,.75);margin-top:5px}
+  .poeni-traka{margin-top:13px}
+  .poeni-traka-lbl{font-size:11.5px;letter-spacing:1.5px;text-transform:uppercase;color:#FBEFCF;opacity:.92}
+  .traka{margin-top:6px;height:8px;border-radius:99px;background:rgba(240,199,94,.16);overflow:hidden}
+  .traka span{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--zlato-t),var(--zlato) 40%,var(--zlato-s))}
+  .trobarnik{display:flex;justify-content:center;gap:16px;margin-top:16px}
+  .trobarnik .trofej{text-align:center;width:58px}
+  .trobarnik .trofej-svg{width:34px;height:38px;margin:0 auto}
+  .trobarnik .trofej-svg svg{width:34px;height:38px;display:block}
+  .trobarnik .trofej .ime{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:rgba(240,199,94,.8);margin-top:4px}
+  .trobarnik .trofej .broj{font-size:10px;color:#FBEFCF;opacity:.85;font-variant-numeric:tabular-nums}
+  .trobarnik .trofej.cekav{opacity:.35;filter:grayscale(.5)}
+  .poeni-zvezde{margin-top:14px;font-size:13px;color:#FBEFCF;letter-spacing:.6px}
+  .poeni-nedelja{margin-top:5px;font-size:12.5px;color:rgba(251,239,207,.92)}
+  .poeni-nedelja b{color:var(--zlato-s)}
+  .poeni-zvezda-ned{color:var(--zlato-s)}
+  .domac{margin-top:16px;padding-top:14px;border-top:1px dashed rgba(240,199,94,.4)}
+  .domac-danas{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--zlato-s);font-weight:700;margin-bottom:8px}
+  .domac-ul{list-style:none}
+  .domac-ul li{display:flex;align-items:center;gap:11px;padding:8px 4px;cursor:pointer;border-bottom:1px solid rgba(240,199,94,.13)}
+  .domac-ul li:last-child{border-bottom:none}
+  .domac-ul li .kocka{flex:none;width:23px;height:23px;border-radius:6px;border:1.6px solid var(--zlato);
+    display:grid;place-items:center;background:rgba(240,199,94,.08)}
+  .domac-ul li .kocka svg{width:15px;height:15px;opacity:0;transform:scale(.5);transition:.15s}
+  .domac-ul li .ime{flex:1;font-size:15.5px;color:#FBEFCF;text-align:left}
+  .domac-ul li .pts{font-size:11.5px;color:rgba(240,199,94,.85);letter-spacing:.5px;font-variant-numeric:tabular-nums}
+  .domac-ul li.ck .kocka{background:linear-gradient(180deg,var(--zlato),var(--zlato-t))}
+  .domac-ul li.ck .kocka svg{opacity:1;transform:scale(1)}
+  .domac-ul li.ck .ime{text-decoration:line-through;opacity:.5}
+  .domac-prosli{margin-top:10px;padding-top:10px;border-top:1px dashed rgba(240,199,94,.28)}
+  .domac-naslov{font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,199,94,.65);margin-bottom:4px}
+  .poeni-dugmadi{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin-top:16px}
+  .poeni-dugmadi button{font-family:inherit;font-size:12.5px;letter-spacing:.8px;cursor:pointer;
+    padding:9px 14px;border-radius:999px;background:rgba(240,199,94,.13);
+    border:1px solid rgba(240,199,94,.55);color:#FBEFCF;transition:.15s}
+  .poeni-dugmadi button:active{background:linear-gradient(180deg,var(--zlato),var(--zlato-t));color:var(--grim-t)}
+  .poeni-reset{margin-top:14px;text-align:center}
+  .poeni-reset a{font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,199,94,.5);
+    cursor:pointer;text-decoration:underline}
+
+  /* СЛАВЉЕ — освојени пехар */
+  .slavlje{display:none;position:fixed;inset:0;z-index:50;background:rgba(8,6,18,.93);
+    align-items:center;justify-content:center}
+  .slavlje-kartica{position:relative;background:linear-gradient(160deg,var(--p1),var(--p3));
+    border:3px solid var(--zlato);border-radius:18px;padding:32px 40px 24px;text-align:center;
+    box-shadow:0 0 0 8px rgba(127,9,9,.9),0 24px 60px rgba(0,0,0,.6);
+    animation:slavPop .5s ease-out;max-width:86vw}
+  @keyframes slavPop{from{transform:scale(.72);opacity:0}to{transform:scale(1);opacity:1}}
+  .slavlje-trofej{width:88px;margin:0 auto}
+  .slavlje-trofej svg{width:88px;height:96px;display:block}
+  .slavlje-naslov{font-size:23px;font-weight:700;color:var(--grim-t);margin-top:10px;letter-spacing:.5px}
+  .slavlje-sub{font-size:15px;color:var(--seno);margin-top:6px;letter-spacing:2px}
+  .slavlje-tap{margin-top:16px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--zlato-t)}
+  .slav-z{position:absolute;color:var(--zlato-s);font-size:22px;animation:slavZv 2.2s ease-in-out infinite;pointer-events:none}
+  .slav-z.s1{top:12%;left:14%}.slav-z.s2{top:20%;right:16%;animation-delay:.3s;font-size:16px}
+  .slav-z.s3{top:64%;left:10%;animation-delay:.6s;font-size:14px}.slav-z.s4{top:74%;right:12%;animation-delay:.9s;font-size:20px}
+  .slav-z.s5{top:8%;left:48%;animation-delay:1.2s;font-size:15px}.slav-z.s6{top:88%;left:44%;animation-delay:1.5s;font-size:18px}
+  .slav-z.s7{top:40%;left:4%;animation-delay:1.8s;font-size:13px}.slav-z.s8{top:48%;right:5%;animation-delay:.15s;font-size:17px}
+  @keyframes slavZv{0%,100%{opacity:.25;transform:scale(.8) rotate(0)}50%{opacity:1;transform:scale(1.15) rotate(20deg)}}
+  @media (prefers-reduced-motion: reduce){
+    .slavlje-kartica,.slav-z{animation:none!important}
+  }
+
   /* ══════ ШТАМПА (А4, у боји) ══════ */
   @page{size:A4 portrait;margin:10mm}
   @media print{
@@ -261,8 +341,8 @@
     *{animation:none!important;transition:none!important;
       -webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
     /* декор из позадине се не штампа */
-    .nebo,.mesec,.zamak,.svece,.pero-bg,.iskra,.smene,.dnevno,.sada{display:none!important}
-    /* коja је смена, пише се умјесто дугмади */
+    .nebo,.mesec,.zamak,.svece,.pero-bg,.iskra,.smene,.dnevno,.sada,.poeni-dugmadi,.domac,.poeni-reset,.poeni-traka,.slavlje,.pregled{display:none!important}
+    /* која је смена, пише се умјесто дугмади */
     .print-smena{display:block!important;text-align:center;font-size:13px;letter-spacing:2.5px;
       text-transform:uppercase;color:#7A5A22;margin:0 0 10px}
     /* картица: прави оквир уместо сенке (сенке се не штампају) */
@@ -515,6 +595,8 @@
     <div class="sada-traka" id="sadaTraka"><span id="sadaBar"></span></div>
   </section>
 
+  <button type="button" class="pregled" id="pregled" onclick="skreniPregled()">prikaži sve dane</button>
+
   <div class="okvir"><div class="skrol">
     <table>
       <colgroup><col class="c1"><col><col><col><col><col></colgroup>
@@ -560,19 +642,38 @@
     <div class="dan-kartica" id="danKartica"></div>
   </div>
 
-  <!-- ПОЕНИ ЗА ГРИФИНДОР -->
+  <!-- ПОЕНИ ЗА ГРИФИНДОР — РАЧУНИЦА -->
   <section class="poeni">
     <h3>
       <svg viewBox="0 0 24 24" fill="#F0C75E" aria-hidden="true"><path d="M12 2l2.6 5.9L21 8.6l-4.7 4.3 1.3 6.4L12 16.2 6.4 19.3l1.3-6.4L3 8.6l6.4-.7z"/></svg>
       Поени за Грифиндор
       <svg viewBox="0 0 24 24" fill="#F0C75E" aria-hidden="true"><path d="M12 2l2.6 5.9L21 8.6l-4.7 4.3 1.3 6.4L12 16.2 6.4 19.3l1.3-6.4L3 8.6l6.4-.7z"/></svg>
     </h3>
-    <ul>
-      <li><svg viewBox="0 0 24 24"><path d="M20 3c-7 1-11 5-13 9l-2 5 5-2c4-2 8-6 10-12z"/></svg>Сваки урађени домаћи <b>+10</b></li>
-      <li><svg viewBox="0 0 24 24"><path d="M12 2l2.6 5.9L21 8.6l-4.7 4.3 1.3 6.4L12 16.2 6.4 19.3l1.3-6.4L3 8.6l6.4-.7z"/></svg>Петица на тесту <b>+20</b></li>
-      <li><svg viewBox="0 0 24 24"><path d="M4 4h11a3 3 0 013 3v13H7a3 3 0 01-3-3z"/></svg>Прочитана књига <b>+20</b></li>
-      <li><svg viewBox="0 0 24 24"><path d="M12 21s-8-4.6-8-10a4.6 4.6 0 018-3 4.6 4.6 0 018 3c0 5.4-8 10-8 10z"/></svg>Помоћ другу <b>+10</b></li>
+
+    <div class="poeni-ukupno">
+      <div class="poeni-broj" id="poeniBroj">0</div>
+      <div class="poeni-lbl">твоји поени</div>
+    </div>
+
+    <div class="poeni-traka">
+      <div class="poeni-traka-lbl" id="poeniSljedeci"></div>
+      <div class="traka"><span id="poeniTraka"></span></div>
+    </div>
+
+    <div class="trobarnik" id="trobarnik"></div>
+
+    <div class="poeni-zvezde" id="poeniZvezde"></div>
+    <div class="poeni-nedelja" id="poeniNedelja"></div>
+
+    <div class="domac" id="domac"></div>
+
+    <ul class="poeni-dugmadi">
+      <li><button type="button" onclick="daj(20)">+20 · петица на тесту</button></li>
+      <li><button type="button" onclick="daj(20)">+20 · прочитана књига</button></li>
+      <li><button type="button" onclick="daj(10)">+10 · помоћ другу</button></li>
     </ul>
+
+    <div class="poeni-reset"><a onclick="resetGodine()">нова школска година</a></div>
     <p class="peh">✦ Ко скупи највише — осваја Школски пехар ✦</p>
   </section>
 
@@ -627,11 +728,30 @@ function ponedeljakOd(d){
   x.setDate(x.getDate() - (w-1));
   return x;
 }
-function klicaNedelje(){ var d=ponedeljakOd(new Date()); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
-function autoSmena(){
-  var m = ponedeljakOd(new Date());
+function klicaNedelje(d){ var x=ponedeljakOd(d || new Date()); return x.getFullYear()+'-'+(x.getMonth()+1)+'-'+x.getDate(); }
+function autoSmenaOd(d){
+  var m = ponedeljakOd(d || new Date());
   var diff = Math.round((m - REF_NED) / 604800000);
   return (diff % 2 === 0) ? 1 : 2;
+}
+function autoSmena(){ return autoSmenaOd(new Date()); }
+/* sledeći ponedeljak (od današnjeg dana) */
+function sledeciPonedeljak(){
+  var x = new Date(); var d = x.getDay(); if(d===0) d=7;
+  x.setDate(x.getDate() + (8 - d));
+  return x;
+}
+/* koja smena važi za konkretan datum: za ovu nedelju — izabrana (ručna ili auto),
+   za ostale nedelje — automatski ciklus */
+function smenaZaDatum(dShow){
+  return (klicaNedelje(dShow) === klicaNedelje()) ? trenutnaSmena : autoSmenaOd(dShow);
+}
+/* koja smena važi za sledeći nastup (ili današnji) dan iz DANI */
+function smenaZaDan(dan){
+  var danas = new Date().getDay(); if(danas===0) danas=7;
+  var cilj = {'Понедељак':1,'Уторак':2,'Среда':3,'Четвртак':4,'Петак':5}[dan];
+  var dShow = new Date(); dShow.setDate(dShow.getDate() + ((cilj - danas + 7) % 7));
+  return smenaZaDatum(dShow);
 }
 /* ручни избор важи само за недјељу у којој је урађен */
 function ucitajSmenu(){
@@ -657,18 +777,21 @@ function smena(n){
   var ps = document.getElementById('printSmena');
   if(ps) ps.textContent = n===1 ? 'Прва смена · 7:45' : 'Друга смена · 13:30';
   prikaziDan(trenutniDan);
+  azuriPoeni();
 }
 
 /* ══════ ДНЕВНИ ПРИКАЗ ══════ */
 function prikaziDan(dan){
   trenutniDan = dan;
-  var v = vremena(trenutnaSmena), casovi = PLAN[dan] || [];
-
   var danas = new Date().getDay(); if(danas===0) danas=7;
   var cilj = {'Понедељак':1,'Уторак':2,'Среда':3,'Четвртак':4,'Петак':5}[dan];
   var diff = (cilj - danas + 7) % 7;
   var dShow = new Date(); dShow.setDate(dShow.getDate() + diff);
+  var smZaDan = smenaZaDatum(dShow);
+  var v = vremena(smZaDan), casovi = PLAN[dan] || [];
+
   var datumStr = (diff===0 ? 'Данас · ' : 'До ') + DANI_M[DANI.indexOf(dan)] + ' · ' + dShow.getDate()+'. ' + MES[dShow.getMonth()];
+  if(smZaDan !== trenutnaSmena) datumStr += ' · ' + (smZaDan===1 ? 'prva smena' : 'druga smena');
 
   var html = '<h4>'+dan+'</h4><div class="datum">'+datumStr+'</div><ol>';
   var ima = false;
@@ -736,8 +859,11 @@ function azuriSada(){
   }
 
   if(st.tip === 'vikend'){
+    var pon = sledeciPonedeljak();
+    var smPon = autoSmenaOd(pon);
     red.textContent = 'Викенд ✦';
-    sub.textContent = 'Видимо се понедељак · '+ime+' · први час: '+PLAN['Понедељак'][0]+' у '+fmt(slots[0].s);
+    sub.textContent = 'Видимо се понедељак · '+(smPon===1 ? 'Прва смена' : 'Друга смена')+
+      ' · први час: '+PLAN['Понедељак'][0]+' у '+fmt(slotovi(smPon)[0].s);
     sakrij(); oznaci(0); return;
   }
   var casovi = PLAN[DANI[st.redni]];
@@ -766,6 +892,202 @@ function azuriSada(){
   }
 }
 
+/* ══════ ПОЕНИ ЗА ГРИФИНДОР — РАЧУНИЦА ══════ */
+var NEDELJA_CILJ = 150;
+var POEN_DOMAC = 10;
+var PEHARI = [
+  { n:500,  ime:'Бронзани пехар', boja:'#C08A4A' },
+  { n:1500, ime:'Сребрени пехар', boja:'#C9CDD3' },
+  { n:3000, ime:'Златни пехар',   boja:'#F0C75E' },
+  { n:5000, ime:'\u0428\u043A\u043E\u043B\u0441\u043A\u0438 \u043F\u0435\u0445\u0430\u0440', boja:'#FFD97A' }
+];
+
+var poeni = ucitajPoeni();
+
+function ucitajPoeni(){
+  var t = store.get('raspored.poeni');
+  if(t){
+    try{
+      var o = JSON.parse(t);
+      if(o) return {
+        ukupno: o.ukupno || 0,
+        nedelje: o.nedelje || {},
+        zvezde: o.zvezde || {},
+        domac: o.domac || {},
+        proslavljeno: o.proslavljeno || []
+      };
+    }catch(e){}
+  }
+  return { ukupno:0, nedelje:{}, zvezde:{}, domac:{}, proslavljeno:[] };
+}
+function cuvajPoeni(){ store.set('raspored.poeni', JSON.stringify(poeni)); }
+function dKljuc(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+
+/* Тренутни школски дан: „звони“ на почетку смјене (7:45 / 13:30), а не у поноћ —
+   па друга смјена и до јутра следећeg дана још увек ради „у јучерашњем“ дану. */
+function danaSada(){
+  var d = new Date();
+  var start = (trenutnaSmena === 1) ? 7*60+45 : 13*60+30;
+  var mini = d.getHours()*60 + d.getMinutes();
+  var x = new Date(d); x.setHours(0,0,0,0);
+  var wd = x.getDay();
+  if(wd >= 1 && wd <= 5 && mini >= start) return x;
+  if(wd === 6) { x.setDate(x.getDate()-1); return x; }
+  if(wd === 0) { x.setDate(x.getDate()-2); return x; }
+  do { x.setDate(x.getDate()-1); } while(x.getDay() === 0 || x.getDay() === 6);
+  return x;
+}
+function prethodniSkoljskiDan(x){
+  var y = new Date(x); y.setDate(y.getDate()-1);
+  while(y.getDay() === 0 || y.getDay() === 6) y.setDate(y.getDate()-1);
+  return y;
+}
+function jedinstveni(dan){
+  var out = [];
+  for(var i=0; i<PLAN[dan].length; i++){
+    var sn = PLAN[dan][i];
+    if(sn && out.indexOf(sn) < 0) out.push(sn);
+  }
+  return out;
+}
+function osvojeniBroj(){
+  var n = 0;
+  for(var i=0; i<PEHARI.length; i++) if(poeni.ukupno >= PEHARI[i].n) n++;
+  return n;
+}
+function daj(n){
+  var k = klicaNedelje();
+  poeni.ukupno += n;
+  poeni.nedelje[k] = Math.max(0, (poeni.nedelje[k]||0) + n);
+  if(!poeni.zvezde[k] && poeni.nedelje[k] >= NEDELJA_CILJ) poeni.zvezde[k] = true;
+  cuvajPoeni();
+  azuriPoeni();
+}
+function minus(n){
+  var k = klicaNedelje();
+  poeni.ukupno = Math.max(0, poeni.ukupno - n);
+  poeni.nedelje[k] = Math.max(0, (poeni.nedelje[k]||0) - n);
+  cuvajPoeni();
+  azuriPoeni();
+}
+function kackajDomac(el){
+  var k = el.dataset.k, i = parseInt(el.dataset.i, 10);
+  var dana = poeni.domac[k] || (poeni.domac[k] = []);
+  if(dana[i]) { dana[i] = false; minus(POEN_DOMAC); }
+  else        { dana[i] = true;  daj(POEN_DOMAC); }
+}
+function resetGodine(){
+  if(confirm('Нова школска година? Сви поени, звезде и пехари ће бити обрисани.')){
+    poeni = { ukupno:0, nedelje:{}, zvezde:{}, domac:{}, proslavljeno:[] };
+    cuvajPoeni();
+    azuriPoeni();
+  }
+}
+
+function trofejSVG(boja, glavni){
+  var o = glavni ? 6 : 0;
+  return '<svg viewBox="0 0 40 44">'
+    + (glavni ? '<path d="M20 0l1.7 3.6 3.9.6-2.8 2.8.7 3.9-3.5-1.8-3.5 1.8.7-3.9-2.8-2.8 3.9-.6z" fill="'+boja+'"/>' : '')
+    + '<path d="M12 '+(6+o)+'h16v5a8 8 0 01-16 0z" fill="'+boja+'"/>'
+    + '<path d="M12 '+(8+o)+'H7a5.5 5.5 0 005.5 6.5" fill="none" stroke="'+boja+'" stroke-width="2.2"/>'
+    + '<path d="M28 '+(8+o)+'h5a5.5 5.5 0 01-5.5 6.5" fill="none" stroke="'+boja+'" stroke-width="2.2"/>'
+    + '<rect x="18" y="'+(20+o)+'" width="4" height="6" fill="'+boja+'"/>'
+    + '<rect x="13" y="'+(26+o)+'" width="14" height="4" rx="1" fill="'+boja+'"/>'
+    + '</svg>';
+}
+
+function pokažiSlavlje(p){
+  document.getElementById('slavljeTrofej').innerHTML = trofejSVG(p.boja, p.n === 5000);
+  document.getElementById('slavljeNaslov').textContent = 'Освајаш — ' + p.ime.toUpperCase() + '!';
+  document.getElementById('slavljeSub').textContent = '✦ ' + p.n + ' поена ✦';
+  document.getElementById('slavlje').style.display = 'flex';
+}
+function provjeriSlavlje(){
+  for(var i=0; i<PEHARI.length; i++){
+    var p = PEHARI[i];
+    if(poeni.ukupno >= p.n && poeni.proslavljeno.indexOf(p.n) < 0){
+      poeni.proslavljeno.push(p.n);
+      cuvajPoeni();
+      pokažiSlavlje(p);
+      return;
+    }
+  }
+}
+
+function redDomaca(k, ss, sub){
+  var h = '';
+  for(var i=0; i<sub.length; i++){
+    h += '<li class="'+(ss[i] ? 'ck' : '')+'" data-k="'+k+'" data-i="'+i+'" onclick="kackajDomac(this)">'
+       + '<span class="kocka"><svg viewBox="0 0 16 16" fill="none" stroke="#4A0404" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8.5l3.4 3.4L13.5 4"/></svg></span>'
+       + '<span class="ime">'+sub[i]+'</span><span class="pts">+'+POEN_DOMAC+'</span></li>';
+  }
+  return h;
+}
+function azuriDomac(){
+  var sada = danaSada();
+  var key = dKljuc(sada);
+  var danSada = DANI[sada.getDay()-1];
+  var html = '<div class="domac-danas">Школски дан · '+DANI_M[sada.getDay()-1]+'</div>'
+           + '<ul class="domac-ul">'+redDomaca(key, poeni.domac[key]||[], jedinstveni(danSada))+'</ul>';
+  var prev = prethodniSkoljskiDan(sada), broj = 0;
+  while(broj < 2){
+    var pk = dKljuc(prev);
+    if(pk === key) break;
+    var psub = jedinstveni(DANI[prev.getDay()-1]);
+    var ps = poeni.domac[pk] || [];
+    var ima = false;
+    for(var i=0; i<psub.length; i++) if(!ps[i]) ima = true;
+    if(ima) html += '<div class="domac-prosli"><div class="domac-naslov">прошли дан · '+DANI_M[prev.getDay()-1]
+                  + '</div><ul class="domac-ul">'+redDomaca(pk, ps, psub)+'</ul></div>';
+    prev = prethodniSkoljskiDan(prev);
+    broj++;
+  }
+  document.getElementById('domac').innerHTML = html;
+}
+function azuriPoeni(){
+  document.getElementById('poeniBroj').textContent = poeni.ukupno;
+  var sledeci = null, prethodni = null;
+  for(var i=0; i<PEHARI.length; i++){
+    if(poeni.ukupno < PEHARI[i].n){ sledeci = PEHARI[i]; break; }
+    prethodni = PEHARI[i];
+  }
+  document.getElementById('poeniSljedeci').textContent = sledeci
+    ? 'још ' + (sledeci.n - poeni.ukupno) + ' до ' + sledeci.ime.toUpperCase()
+    : 'сви пехари су освојени ✦';
+  if(sledeci){
+    var baza = prethodni ? prethodni.n : 0;
+    document.getElementById('poeniTraka').style.width =
+      Math.max(0, Math.min(100, (poeni.ukupno - baza)/(sledeci.n - baza)*100)) + '%';
+  } else {
+    document.getElementById('poeniTraka').style.width = '100%';
+  }
+  var th = '';
+  for(var j=0; j<PEHARI.length; j++){
+    var p = PEHARI[j], os = poeni.ukupno >= p.n;
+    th += '<div class="trofej'+(os ? '' : ' cekav')+'" title="'+p.ime+'">'
+        + '<div class="trofej-svg">'+trofejSVG(p.boja, p.n === 5000)+'</div>'
+        + '<div class="ime">'+p.ime.replace(' пехар','')+'</div>'
+        + '<div class="broj">'+p.n+'</div></div>';
+  }
+  document.getElementById('trobarnik').innerHTML = th;
+  var broja = 0;
+  for(var k in poeni.zvezde) if(poeni.zvezde[k]) broja++;
+  document.getElementById('poeniZvezde').textContent = broja
+    ? '✦ похвалне звезде: ' + broja
+    : 'похвална звезда се добија за ' + NEDELJA_CILJ + ' поена у недјећи';
+  var nk = klicaNedelje(), nn = poeni.nedelje[nk] || 0;
+  document.getElementById('poeniNedelja').innerHTML = 'Ова недјећа: <b>'+nn+'</b> / '+NEDELJA_CILJ
+    + (poeni.zvezde[nk] ? ' <span class="poeni-zvezda-ned">✦</span>' : '');
+  azuriDomac();
+  provjeriSlavlje();
+}
+
+function skreniPregled(){
+  var uklj = document.body.classList.toggle('tabela');
+  var b = document.getElementById('pregled');
+  if(b) b.textContent = uklj ? 'prikaži po danu' : 'prikaži sve dane';
+}
+
 /* ══════ ПОКРЕТАЊЕ ══════ */
 (function init(){
   var tabovi = document.getElementById('danTabovi'), html = '';
@@ -788,5 +1110,18 @@ if('serviceWorker' in navigator){
   });
 }
 </script>
+<!-- СЛАВЉЕ — освојени пехар -->
+<div class="slavlje" id="slavlje" onclick="this.style.display='none'">
+  <span class="slav-z s1" aria-hidden="true">✦</span><span class="slav-z s2" aria-hidden="true">✦</span>
+  <span class="slav-z s3" aria-hidden="true">✦</span><span class="slav-z s4" aria-hidden="true">✦</span>
+  <span class="slav-z s5" aria-hidden="true">✦</span><span class="slav-z s6" aria-hidden="true">✦</span>
+  <span class="slav-z s7" aria-hidden="true">✦</span><span class="slav-z s8" aria-hidden="true">✦</span>
+  <div class="slavlje-kartica">
+    <div class="slavlje-trofej" id="slavljeTrofej"></div>
+    <div class="slavlje-naslov" id="slavljeNaslov"></div>
+    <div class="slavlje-sub" id="slavljeSub"></div>
+    <div class="slavlje-tap">✦ тапни ✦</div>
+  </div>
+</div>
 </body>
 </html>
