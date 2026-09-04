@@ -222,8 +222,8 @@
     color:var(--zlato-s);border-color:var(--zlato)}
   .dan-kartica{border:2px solid var(--zlato-t);border-radius:13px;overflow:hidden;
     background:linear-gradient(180deg,var(--p1),var(--p2));
-    box-shadow:0 0 0 4px rgba(138,100,32,.12);
-    animation: fadeIn .3s ease}
+    box-shadow:0 0 0 4px rgba(138,100,32,.12)}
+  .dan-kartica.animacija-fade{animation:fadeIn .3s ease}
   @keyframes fadeIn{from{opacity:0; transform:translateY(10px)}to{opacity:1; transform:translateY(0)}}
   .dan-kartica h4{background:linear-gradient(180deg,#8F0A0A,#650101);color:var(--zlato-s);
     font-size:13px;letter-spacing:2.5px;text-transform:uppercase;padding:11px 8px;text-align:center;
@@ -320,7 +320,7 @@
     .dan-kartica li .ime{font-size:17.5px}
     .dan-kartica li .kad{font-size:13.5px}
     .dan-kartica li .br{width:31px;height:31px;font-size:15px}
-    /* povećanje dugmadi za mobilne */
+    /* povečanje dugmadi za mobilne */
     .poeni-dugmadi button{font-size:14px;padding:12px 18px}
     .podesavanja-dugmad button{font-size:16px;padding:12px 22px}
     .podesavanja-red label{min-width:100px;font-size:14px}
@@ -872,6 +872,12 @@ var DANI = ['Понедељак','Уторак','Среда','Четвртак',
 var DANI_M = ['понедељак','уторак','среда','четвртак','петак'];
 var MES = ['јануар','фебруар','март','април','мај','јун','јул','август','септембар','октобар','новембар','децембар'];
 
+/* ══════ СИГУРНО СКЛАДИШТЕ — ПРЕ ОД CONFIG / PLAN ══════ */
+var store = {
+  get: function(k){ try{ return window.localStorage.getItem(k); }catch(e){ return null; } },
+  set: function(k,v){ try{ window.localStorage.setItem(k,v); }catch(e){ /* ако је пуно, игнориши */ } }
+};
+
 // Тренутна радна конфигурација и план (почиње од подразумеваних, ако нема сачуваних)
 var CONFIG = ucitajConfig();
 var PLAN = ucitajPlan();
@@ -880,28 +886,25 @@ var PLAN = ucitajPlan();
 var REF_NED = CONFIG.refNed;
 var trenutnaSmena = 1, trenutniDan = null;
 
-/* сигурно складиште (ради и у контекстима без localStorage) */
-var store = {
-  get: function(k){ try{ return window.localStorage.getItem(k); }catch(e){ return null; } },
-  set: function(k,v){ try{ window.localStorage.setItem(k,v); }catch(e){ /* ако је пуно, игнориши */ } }
-};
-
 function ucitajConfig(){
   var t = store.get('raspored.config');
   if(t){
     try{
       var o = JSON.parse(t);
-      if(o){
-        // провера свих кључева
-        var defaults = Object.assign({}, DEFAULT_CONFIG);
-        for (var key in defaults) {
-          if (o[key] === undefined) o[key] = defaults[key];
+      if(o && Array.isArray(o.smena1u) && Array.isArray(o.smena2u)){
+        for (var key in DEFAULT_CONFIG) {
+          if (o[key] === undefined) o[key] = DEFAULT_CONFIG[key];
         }
+        // ово корисник не мења у форми — увек узми уграђено (датум се у JSON-у изгуби)
+        o.refNed = DEFAULT_CONFIG.refNed;
+        o.praznici = DEFAULT_CONFIG.praznici;
+        o.nedeljaCilj = DEFAULT_CONFIG.nedeljaCilj;
+        o.poenDomaci = DEFAULT_CONFIG.poenDomaci;
         return o;
       }
     }catch(e){}
   }
-  return Object.assign({}, DEFAULT_CONFIG); // vrati kopiju
+  return Object.assign({}, DEFAULT_CONFIG);
 }
 
 function ucitajPlan(){
@@ -1101,7 +1104,7 @@ function azuriSada(){
     var kraj = new Date(msOd(pz[1]) + 86400000);
     red.textContent = 'Школски одмор ✦';
     sub.textContent = 'видимо се ' + kraj.getDate() + '. ' + MES[kraj.getMonth()] +
-      (kraj.getFullYear() !== new Date().getFullYear() ? ' ' + kraj.getFullYear() : '') + '.';
+      (kraj.getFullYear() !== new Date().getFullYear() ? ' ' + kraj.getFullYear() : '.') + '.';
     var smb = document.querySelector('.smene'); if(smb) smb.style.display = 'none';
     sakrij(); oznaci(0); return;
   }
