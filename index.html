@@ -678,8 +678,8 @@
     <span class="l"></span>
   </div>
 
-  <!-- СМЕНЕ: аутоматски по недјељама (од 07.09.2026 прва, па наизмјенично),
-       ручни избор се памти само за тренутну недјељу -->
+  <!-- СМЕНЕ: аутоматски по недељама (од 07.09.2026 прва, па наизмјенично),
+       ручни избор се памти само за тренутну недељу -->
   <div class="smene">
     <button id="b1" aria-pressed="false" onclick="smena(1)">Прва смена · 7:45</button>
     <button id="b2" aria-pressed="false" onclick="smena(2)">Друга смена · 13:30</button>
@@ -833,8 +833,8 @@
 /* ══════ КОНФИГУРАЦИЈА — све што се мијења из године у годину ══════
    Овдје је СВЕ: смена, звоно, поени, распусти. Остатак фајла чита одавде. */
 var DEFAULT_CONFIG = {
-  refNed: new Date(2026, 8, 7),   // понедељак од кога важи 1. смена (па наизмјенично)
-  nedeljaCilj: 150,               // поена за похвалну звјезду недјеље
+  refNed: new Date(2026, 8, 7),   // понедељак од кога важи 1. смена (па наизменично)
+  nedeljaCilj: 150,               // поена за похвалну звезду недеље
   poenDomaci: 10,                 // поена по одрађеном домаћем
   smena1u: [7, 45],               // почетак часова — 1. смена
   smena2u: [13, 30],              // почетак часова — 2. смена
@@ -963,7 +963,7 @@ function ispuniTabelu(){
   tb.innerHTML = h;
 }
 
-/* ══════ СМЕНЕ ПО НЕДЉЕЉАМА ══════ */
+/* ══════ СМЕНЕ ПО НЕДЕЉАМА ══════ */
 function ponedeljakOd(d){
   var x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
   var w = x.getDay(); if(w===0) w=7;
@@ -988,7 +988,7 @@ function sledeciPonedeljak(){
 function smenaZaDatum(dShow){
   return (klicaNedelje(dShow) === klicaNedelje()) ? trenutnaSmena : autoSmenaOd(dShow);
 }
-/* ручни избор важи само за недјељу у којој је урађен */
+/* ручни избор важи само за недељу у којој је урађен */
 function ucitajSmenu(){
   var t = store.get('raspored.smena');
   if(t){ try{ var o=JSON.parse(t); if(o && o.k===klicaNedelje() && (o.s===1 || o.s===2)) return o.s; }catch(e){} }
@@ -1026,7 +1026,7 @@ function prikaziDan(dan){
   var v = vremena(smZaDan), casovi = PLAN[dan] || [];
 
   var datumStr = (diff===0 ? 'Данас · ' : 'До ') + DANI_M[DANI.indexOf(dan)] + ' · ' + dShow.getDate()+'. ' + MES[dShow.getMonth()];
-  if(smZaDan !== trenutnaSmena) datumStr += ' · ' + (smZaDan===1 ? 'prva smena' : 'druga smena');
+  if(smZaDan !== trenutnaSmena) datumStr += ' · ' + (smZaDan===1 ? 'прва смена' : 'друга смена');
 
   var html = '<h4>'+dan+'</h4><div class="datum">'+datumStr+'</div><ol>';
   var ima = false;
@@ -1225,7 +1225,7 @@ function nedeljaSkole(){ return klicaNedelje(danaSada()); }
 function osveziBrojace(){
   var nk = klicaNedelje(), nn = poeni.nedelje[nk] || 0;
   document.getElementById('poeniBroj').textContent = poeni.ukupno;
-  document.getElementById('poeniNedelja').innerHTML = 'Ова недјећа: <b>'+nn+'</b> / '+NEDELJA_CILJ
+  document.getElementById('poeniNedelja').innerHTML = 'Ова недеља: <b>'+nn+'</b> / '+NEDELJA_CILJ
     + (poeni.zvezde[nk] ? ' <span class="poeni-zvezda-ned">✦</span>' : '');
   var sledeci = null, prethodni = null;
   for(var i=0; i<PEHARI.length; i++){
@@ -1246,7 +1246,7 @@ function osveziBrojace(){
   for(var k in poeni.zvezde) if(poeni.zvezde[k]) broja++;
   document.getElementById('poeniZvezde').textContent = broja
     ? '✦ похвалне звезде: ' + broja
-    : 'похвална звезда се добија за ' + NEDELJA_CILJ + ' поена у недјећи';
+    : 'похвална звезда се добија за ' + NEDELJA_CILJ + ' поена у недељи';
 }
 function upisiDnevnik(n, razlog){
   poeni.log.unshift({ d: dKljuc(new Date()), n: n, r: razlog || '' });
