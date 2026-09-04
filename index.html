@@ -320,7 +320,7 @@
     .dan-kartica li .ime{font-size:17.5px}
     .dan-kartica li .kad{font-size:13.5px}
     .dan-kartica li .br{width:31px;height:31px;font-size:15px}
-    /* povečanje dugmadi za mobilne */
+    /* povećanje dugmadi za mobilne */
     .poeni-dugmadi button{font-size:14px;padding:12px 18px}
     .podesavanja-dugmad button{font-size:16px;padding:12px 22px}
     .podesavanja-red label{min-width:100px;font-size:14px}
@@ -872,7 +872,7 @@ var DANI = ['Понедељак','Уторак','Среда','Четвртак',
 var DANI_M = ['понедељак','уторак','среда','четвртак','петак'];
 var MES = ['јануар','фебруар','март','април','мај','јун','јул','август','септембар','октобар','новембар','децембар'];
 
-/* ══════ СИГУРНО СКЛАДИШТЕ — ПРЕ ОД CONFIG / PLAN ══════ */
+/* сигурно складиште (ради и у контекстима без localStorage) */
 var store = {
   get: function(k){ try{ return window.localStorage.getItem(k); }catch(e){ return null; } },
   set: function(k,v){ try{ window.localStorage.setItem(k,v); }catch(e){ /* ако је пуно, игнориши */ } }
@@ -904,7 +904,7 @@ function ucitajConfig(){
       }
     }catch(e){}
   }
-  return Object.assign({}, DEFAULT_CONFIG);
+  return Object.assign({}, DEFAULT_CONFIG); // vrati kopiju
 }
 
 function ucitajPlan(){
@@ -1104,7 +1104,7 @@ function azuriSada(){
     var kraj = new Date(msOd(pz[1]) + 86400000);
     red.textContent = 'Школски одмор ✦';
     sub.textContent = 'видимо се ' + kraj.getDate() + '. ' + MES[kraj.getMonth()] +
-      (kraj.getFullYear() !== new Date().getFullYear() ? ' ' + kraj.getFullYear() : '.') + '.';
+      (kraj.getFullYear() !== new Date().getFullYear() ? ' ' + kraj.getFullYear() : '') + '.';
     var smb = document.querySelector('.smene'); if(smb) smb.style.display = 'none';
     sakrij(); oznaci(0); return;
   }
