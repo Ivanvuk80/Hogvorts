@@ -239,6 +239,53 @@
   .dan-kartica li .kad{flex:none;font-size:11.5px;color:#7A5A22;font-variant-numeric:tabular-nums;
     letter-spacing:.3px}
 
+  /* ══════ НОВО: ПОДЕШАВАЊА ══════ */
+  .podesavanja-overlay{display:none;position:fixed;inset:0;z-index:70;background:rgba(8,6,18,.93);
+    align-items:center;justify-content:center;padding:20px}
+  .podesavanja-kartica{position:relative;width:100%;max-width:900px;max-height:90vh;overflow-y:auto;
+    background:linear-gradient(160deg,var(--p1),var(--p3));
+    border:3px solid var(--zlato);border-radius:18px;padding:24px 20px 20px;
+    box-shadow:0 0 0 8px rgba(127,9,9,.9),0 24px 60px rgba(0,0,0,.6);
+    font-family:inherit;color:var(--mastilo)}
+  .podesavanja-kartica h2{text-align:center;color:var(--grim-t);font-size:22px;letter-spacing:2px;
+    text-transform:uppercase;margin-bottom:16px}
+  .podesavanja-kartica .zatvori{position:absolute;top:10px;right:14px;background:none;border:none;
+    font-size:24px;color:var(--seno);cursor:pointer;font-family:inherit}
+  .podesavanja-grupa{background:rgba(255,255,255,.3);border:1.5px solid rgba(138,100,32,.4);
+    border-radius:12px;padding:14px;margin-bottom:16px}
+  .podesavanja-grupa h3{font-size:16px;color:var(--grim);letter-spacing:1px;text-transform:uppercase;
+    margin-bottom:10px}
+  .podesavanja-red{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px}
+  .podesavanja-red label{flex:1;min-width:120px;font-size:15px;color:var(--mastilo)}
+  .podesavanja-red input,.podesavanja-red select,.podesavanja-red button{
+    font-family:inherit;font-size:15px;padding:8px 10px;border:1.5px solid var(--zlato-t);
+    border-radius:8px;background:rgba(255,255,255,.7);color:var(--mastilo);max-width:120px}
+  .podesavanja-red select{max-width:none;flex:1;min-width:160px}
+  .podesavanja-red input[type="number"]{width:80px}
+  .podesavanja-tabela{width:100%;border-collapse:collapse;margin-bottom:12px}
+  .podesavanja-tabela th,.podesavanja-tabela td{border:1px solid rgba(138,100,32,.3);padding:6px;
+    text-align:center;font-size:14px}
+  .podesavanja-tabela th{background:linear-gradient(180deg,#F0DFB6,#E2CD9E);color:var(--grim);
+    font-weight:700}
+  .podesavanja-tabela td select{width:100%;font-family:inherit;font-size:14px;padding:5px;
+    border:1px solid var(--zlato-t);border-radius:6px;background:rgba(255,255,255,.7);color:var(--mastilo)}
+  .podesavanja-dugmad{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:16px}
+  .podesavanja-dugmad button{font-family:inherit;font-size:15px;letter-spacing:1px;cursor:pointer;
+    padding:10px 20px;border-radius:999px;border:1.5px solid var(--grim);
+    background:rgba(255,255,255,.6);color:var(--grim);transition:.18s}
+  .podesavanja-dugmad button:hover{background:rgba(127,9,9,.15)}
+  .podesavanja-dugmad button.primarno{background:linear-gradient(180deg,var(--grim),var(--grim-t));
+    color:var(--zlato-s);border-color:var(--zlato)}
+  .podesavanja-dugmad button.primarno:hover{background:linear-gradient(180deg,var(--grim-s),var(--grim))}
+  /* Мобилни приказ форме */
+  @media(max-width:620px){
+    .podesavanja-kartica{padding:16px 10px 12px}
+    .podesavanja-red label{min-width:100px;font-size:14px}
+    .podesavanja-red input,.podesavanja-red select,.podesavanja-red button{font-size:14px}
+    .podesavanja-tabela th,.podesavanja-tabela td{font-size:12px;padding:4px}
+    .podesavanja-tabela td select{font-size:12px}
+  }
+
   @media(max-width:760px){
     body{padding:26px 10px 60px}
     .karta{padding:26px 14px 20px}
@@ -382,7 +429,7 @@
     *{animation:none!important;transition:none!important;
       -webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
     /* декор из позадине се не штампа */
-    .nebo,.mesec,.zamak,.svece,.pero-bg,.iskra,.smene,.dnevno,.sada,.poeni-dugmadi,.domac,.poeni-reset,.poeni-traka,.slavlje,.pregled,.stampaj,.novost{display:none!important}
+    .nebo,.mesec,.zamak,.svece,.pero-bg,.iskra,.smene,.dnevno,.sada,.poeni-dugmadi,.domac,.poeni-reset,.poeni-traka,.slavlje,.pregled,.stampaj,.novost,.podesavanja-overlay{display:none!important}
     /* која је смена, пише се умјесто дугмади */
     .print-smena{display:block!important;text-align:center;font-size:13px;letter-spacing:2.5px;
       text-transform:uppercase;color:#7A5A22;margin:0 0 10px}
@@ -701,15 +748,69 @@
       <span>„Помоћ ће увек бити пружена онима који је затраже.“
         <span class="ko">Албус Дамблдор</span></span>
     </p>
+    <p class="stampaj"><a id="podesavanjaLink" onclick="otvoriPodesavanja()">⚙ Подешавања</a></p>
     <p class="stampaj"><a id="mirniLink" onclick="okreniMirno()">магија: мирна</a></p>
     <p class="stampaj"><a onclick="window.print()">⎙ Одштампај распоред</a></p>
   </footer>
 </main>
 
+<!-- ПОДЕШАВАЊА -->
+<div class="podesavanja-overlay" id="podesavanjaOverlay">
+  <div class="podesavanja-kartica">
+    <button class="zatvori" onclick="zatvoriPodesavanja()" aria-label="Затвори">×</button>
+    <h2>Подешавања</h2>
+
+    <div class="podesavanja-grupa">
+      <h3>Време звона</h3>
+      <div class="podesavanja-red">
+        <label>Почетак прве смене</label>
+        <input type="number" id="s1h" min="0" max="23" value="7"> :
+        <input type="number" id="s1m" min="0" max="59" value="45">
+      </div>
+      <div class="podesavanja-red">
+        <label>Почетак друге смене</label>
+        <input type="number" id="s2h" min="0" max="23" value="13"> :
+        <input type="number" id="s2m" min="0" max="59" value="30">
+      </div>
+      <div class="podesavanja-red">
+        <label>Трајање часа (минута)</label>
+        <input type="number" id="casMinuta" min="30" max="60" value="45">
+      </div>
+      <div class="podesavanja-red">
+        <label>Велика пауза после часа</label>
+        <input type="number" id="pauzaPosle" min="1" max="7" value="2">
+      </div>
+      <div class="podesavanja-red">
+        <label>Велика пауза (минута)</label>
+        <input type="number" id="pauzaVelika" min="5" max="30" value="20">
+      </div>
+      <div class="podesavanja-red">
+        <label>Мала пауза (минута)</label>
+        <input type="number" id="pauzaMala" min="1" max="15" value="5">
+      </div>
+    </div>
+
+    <div class="podesavanja-grupa">
+      <h3>Распоред часова</h3>
+      <table class="podesavanja-tabela">
+        <thead>
+          <tr><th>Дан</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr>
+        </thead>
+        <tbody id="podesavanjaTabela"></tbody>
+      </table>
+    </div>
+
+    <div class="podesavanja-dugmad">
+      <button onclick="resetujPodesavanja()">Врати на уграђено</button>
+      <button class="primarno" onclick="sacuvajPodesavanja()">Сачувај</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ══════ КОНФИГУРАЦИЈА — све што се мијења из године у годину ══════
    Овдје је СВЕ: смена, звоно, поени, распусти. Остатак фајла чита одавде. */
-var CONFIG = {
+var DEFAULT_CONFIG = {
   refNed: new Date(2026, 8, 7),   // понедељак од кога важи 1. смена (па наизмјенично)
   nedeljaCilj: 150,               // поена за похвалну звјезду недјеље
   poenDomaci: 10,                 // поена по одрађеном домаћем
@@ -726,16 +827,30 @@ var CONFIG = {
   ]                               // (за 2027/28 само допунити ову листу)
 };
 
-var DANI = ['Понедељак','Уторак','Среда','Четвртак','Петак'];
-var DANI_M = ['понедељак','уторак','среда','четвртак','петак'];
-var MES = ['јануар','фебруар','март','април','мај','јун','јул','август','септембар','октобар','новембар','децембар'];
-var PLAN = {
+var DEFAULT_PLAN = {
   'Понедељак':['Српски','Математика','Техничко','Техничко','Енглески',null,null],
   'Уторак':   ['Физичко','Математика','Веронаука / Грађанско','Биологија','Српски','Информатика',null],
   'Среда':    ['Српски','Енглески','Физичко','Математика','Немачки / Француски','Ликовно','Ликовно'],
   'Четвртак': ['Историја','Математика','Српски','Физичко','Музичко','Информатика',null],
   'Петак':    ['Биологија','Српски','Музичко','Географија','Немачки / Француски',null,null]
 };
+
+// Листа свих предмета за основну школу (проширена)
+var PREDMETI = [
+  'Српски','Математика','Енглески','Немачки','Француски','Руски','Италијански',
+  'Историја','Географија','Физика','Хемија','Биологија',
+  'Техничко','Информатика','Ликовно','Музичко','Физичко',
+  'Веронаука','Грађанско','Веронаука / Грађанско','Немачки / Француски',
+  'Природа и друштво','Свет око нас','Чувари природе'
+];
+
+var DANI = ['Понедељак','Уторак','Среда','Четвртак','Петак'];
+var DANI_M = ['понедељак','уторак','среда','четвртак','петак'];
+var MES = ['јануар','фебруар','март','април','мај','јун','јул','август','септембар','октобар','новембар','децембар'];
+
+// Тренутна радна конфигурација и план (почиње од подразумеваних, ако нема сачуваних)
+var CONFIG = ucitajConfig();
+var PLAN = ucitajPlan();
 
 /* од овог понедељка важи: 1. смена, па наизмјенично сваке недјеље (CONFIG.refNed) */
 var REF_NED = CONFIG.refNed;
@@ -746,6 +861,31 @@ var store = {
   get: function(k){ try{ return window.localStorage.getItem(k); }catch(e){ return null; } },
   set: function(k,v){ try{ window.localStorage.setItem(k,v); }catch(e){} }
 };
+
+function ucitajConfig(){
+  var t = store.get('raspored.config');
+  if(t){
+    try{
+      var o = JSON.parse(t);
+      if(o && o.smena1u && o.smena2u) return o;
+    }catch(e){}
+  }
+  return Object.assign({}, DEFAULT_CONFIG); // vrati kopiju
+}
+
+function ucitajPlan(){
+  var t = store.get('raspored.plan');
+  if(t){
+    try{
+      var o = JSON.parse(t);
+      if(o && o['Понедељак'] && o['Уторак']) return o;
+    }catch(e){}
+  }
+  return JSON.parse(JSON.stringify(DEFAULT_PLAN)); // duboka kopija
+}
+
+function sacuvajConfig(){ store.set('raspored.config', JSON.stringify(CONFIG)); }
+function sacuvajPlan(){ store.set('raspored.plan', JSON.stringify(PLAN)); }
 
 function fmt(x){ var h=Math.floor(x/60), m=x%60; return (h<10?'0':'')+h+':'+(m<10?'0':'')+m; }
 
@@ -803,13 +943,6 @@ function sledeciPonedeljak(){
    za ostale nedelje — automatski ciklus */
 function smenaZaDatum(dShow){
   return (klicaNedelje(dShow) === klicaNedelje()) ? trenutnaSmena : autoSmenaOd(dShow);
-}
-/* koja smena važi za sledeći nastup (ili današnji) dan iz DANI */
-function smenaZaDan(dan){
-  var danas = new Date().getDay(); if(danas===0) danas=7;
-  var cilj = {'Понедељак':1,'Уторак':2,'Среда':3,'Четвртак':4,'Петак':5}[dan];
-  var dShow = new Date(); dShow.setDate(dShow.getDate() + ((cilj - danas + 7) % 7));
-  return smenaZaDatum(dShow);
 }
 /* ручни избор важи само за недјељу у којој је урађен */
 function ucitajSmenu(){
@@ -871,7 +1004,6 @@ function prikaziDan(dan){
 }
 
 /* ══════ ТЕКУЋИ ЧАС ══════ */
-/* чисто стање (без DOM-а) — лако се тестира */
 function sadaStanje(datum, smena){
   var D = new Date(datum);
   var dan = D.getDay();
@@ -962,9 +1094,8 @@ function azuriSada(){
 }
 
 /* ══════ ПОЕНИ ЗА ГРИФИНДОР — РАЧУНИЦА ══════ */
-/* П-5: подесиво на једном месту (дође у ред уз REF_NED) */
-var NEDELJA_CILJ = CONFIG.nedeljaCilj;  // звезда: поена у недјећи
-var POEN_DOMAC = CONFIG.poenDomaci;     // поена за један одрађени предмет
+var NEDELJA_CILJ = CONFIG.nedeljaCilj;
+var POEN_DOMAC = CONFIG.poenDomaci;
 var PEHARI = [
   { n:500,  ime:'Бронзани пехар', boja:'#C08A4A' },
   { n:1500, ime:'Сребрени пехар', boja:'#C9CDD3' },
@@ -994,7 +1125,6 @@ function ucitajPoeni(){
 function cuvajPoeni(){ store.set('raspored.poeni', JSON.stringify(poeni)); }
 function dKljuc(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
 function msOd(k){ var p=String(k).split('-'); return new Date(+p[0], +p[1]-1, +p[2]).getTime(); }
-/* врати [почетак, крај] распуста ако је датум у њему, иначе null */
 function praznikDan(d){
   var tt = d.getTime();
   for(var i=0;i<CONFIG.praznici.length;i++){
@@ -1004,11 +1134,9 @@ function praznikDan(d){
   return null;
 }
 
-/* Тренутни школски дан: „звони“ на почетку смјене (7:45 / 13:30), а не у поноћ —
-   па друга смјена и до јутра следећeg дана још увек ради „у јучерашњем“ дану. */
 function danaSada(){
   var d = new Date();
-  var start = (trenutnaSmena === 1) ? 7*60+45 : 13*60+30;
+  var start = (trenutnaSmena === 1) ? CONFIG.smena1u[0]*60+CONFIG.smena1u[1] : CONFIG.smena2u[0]*60+CONFIG.smena2u[1];
   var mini = d.getHours()*60 + d.getMinutes();
   var x = new Date(d); x.setHours(0,0,0,0);
   var wd = x.getDay();
@@ -1036,13 +1164,7 @@ function osvojeniBroj(){
   for(var i=0; i<PEHARI.length; i++) if(poeni.ukupno >= PEHARI[i].n) n++;
   return n;
 }
-/* П-1 (v8): недеља у коју иду поени = недеља ШКОЛСКОГ дана (danaSada),
-   не реалног сада. Понедељак ујутру (пре зва) још „је“ петак прошле
-   недеље — па тап за петак мора завршити у ПРОШЛОЈ недељи,
-   иначе стара недеља остаје без звезде коју је зарадила. */
 function nedeljaSkole(){ return klicaNedelje(danaSada()); }
-/* V9: ЛАХКА освежање бројача — БЕЗ препуног рендера домаћих (то се ради
-   само при отварању/промени дана). Тап мора да одговори ТРЕНУТНО. */
 function osveziBrojace(){
   var nk = klicaNedelje(), nn = poeni.nedelje[nk] || 0;
   document.getElementById('poeniBroj').textContent = poeni.ukupno;
@@ -1069,9 +1191,6 @@ function osveziBrojace(){
     ? '✦ похвалне звезде: ' + broja
     : 'похвална звезда се добија за ' + NEDELJA_CILJ + ' поена у недјећи';
 }
-/* v10 — ДНЕВНИК ПОЧИНАКА: сваки ручни бонус (помоћ/књига/петица) се
-   упише са датумом и разлогом. Домаци се НЕ дневничаре појединачно
-   (то би била бука) — они живе у недељним збировима и штиклиранима. */
 function upisiDnevnik(n, razlog){
   poeni.log.unshift({ d: dKljuc(new Date()), n: n, r: razlog || '' });
   poeni.log = poeni.log.slice(0, 200);
@@ -1099,8 +1218,6 @@ function daj(n, razlog){
   poeni.ukupno += n;
   poeni.nedelje[k] = Math.max(0, (poeni.nedelje[k]||0) + n);
   if(!poeni.zvezde[k] && poeni.nedelje[k] >= NEDELJA_CILJ) poeni.zvezde[k] = true;
-  /* НИСКА поена (minus) НЕ гаси звезду — намерно: звезда је „освојена“
-     једном, и остаје; велико дете не сме да изгуби оно што је показало. */
   if(razlog) upisiDnevnik(n, razlog);
   cuvajPoeni();
   osveziBrojace();
@@ -1114,20 +1231,14 @@ function minus(n){
   cuvajPoeni();
   osveziBrojace();
 }
-/* П-3 (v8): овера по ИМЕНУ предмета (кључ = subject), не по индексу —
-   кад се распоред промени, индекси поремонтирају а имена остају. */
 function kackajDomac(el){
   var k = el.dataset.k, s = el.dataset.s;
   var dana = poeni.domac[k] || (poeni.domac[k] = {});
   var ukljucen = !!dana[s];
   if(ukljucen) { delete dana[s]; minus(POEN_DOMAC); }
   else         { dana[s] = true;  daj(POEN_DOMAC); }
-  /* П-4 (v8): само ОВАЈ ред се тоглује — без препуног innerHTML-а целог
-     блока (анимација квачице ради, скрол не скаче, други тап не нестаје). */
   el.classList.toggle('ck', !ukljucen);
 }
-/* v12 — АРХИВА: година се прије брисања сачува (дјељење/копија текста) —
-   „нова школска година" онда није губитак него завршна реч. */
 function fmtKljuc(k){
   var p = String(k).split('-');
   if(p.length !== 3) return String(k);
@@ -1187,7 +1298,6 @@ function sacuvajGodinu(){
     povratniSacuvaj('✗ уређај не дозвољава');
   }
 }
-/* v12 — ресет са цифрама и уписом ОБРИШИ: палац не смје моћи да обрише годину */
 function resetGodine(){
   var poruka = 'Нова школска година — обрисаће се СВЕ:\n'
     + ' \u2022 ' + poeni.ukupno + ' поена\n'
@@ -1218,7 +1328,6 @@ function trofejSVG(boja, glavni){
     + '<rect x="13" y="'+(26+o)+'" width="14" height="4" rx="1" fill="'+boja+'"/>'
     + '</svg>';
 }
-
 function pokažiSlavlje(p){
   document.getElementById('slavljeTrofej').innerHTML = trofejSVG(p.boja, p.n === 5000);
   document.getElementById('slavljeNaslov').textContent = 'Освајаш — ' + p.ime.toUpperCase() + '!';
@@ -1247,9 +1356,6 @@ function redDomaca(k, ss, sub){
   }
   return h;
 }
-/* П-2 (v8): оверљиви су СВИ дани текуће недеље (од понедељка), не само
-   2 прошлих — два дана боловања више не краду звезду од 150/недељу.
-   Прошлонедељни дани и после тапа добијају поене у СВОЈУ недељу (П-1). */
 function azuriDomac(){
   var sada = danaSada();
   var key = dKljuc(sada);
@@ -1304,19 +1410,16 @@ function skreniPregled(){
   if(b) b.textContent = uklj ? 'prikaži po danu' : 'prikaži sve dane';
 }
 
-/* ══════ v13 — МИРНИ РЕЖИМ ══════
-   Слабији телефони скачају кад декор игра у току скрола. „mirno“ = исти
-   изглед, нула покрета (статични постер). Укључује се аутоматски У ТОКУ
-   скрола (и враћа кад престанеш) и ручно из подножја — подразумевано МИРНО. */
+/* ══════ v13 — МИРНИ РЕЖИМ ══════ */
 function primeniMirno(){
-  var miran = store.get('mirni') !== '0';   /* подразумјевано: мирно */
+  var miran = store.get('mirni') !== '0';
   document.body.classList.toggle('mirno', miran);
   var a = document.getElementById('mirniLink');
   if(a) a.textContent = miran ? 'магија: мирна' : 'магија: пуна ✦';
 }
 function okreniMirno(){
   var miran = store.get('mirni') !== '0';
-  store.set('mirni', miran ? '0' : '1');   /* тап: 1↔0 */
+  store.set('mirni', miran ? '0' : '1');
   primeniMirno();
 }
 var mirTajmer = null;
@@ -1325,6 +1428,135 @@ window.addEventListener('scroll', function(){
   if(mirTajmer) clearTimeout(mirTajmer);
   mirTajmer = setTimeout(function(){ document.body.classList.remove('skrolmir'); }, 350);
 }, {passive:true});
+
+/* ══════ ПОДЕШАВАЊА ══════ */
+function otvoriPodesavanja(){
+  // popuni formu trenutnim vrednostima
+  document.getElementById('s1h').value = CONFIG.smena1u[0];
+  document.getElementById('s1m').value = CONFIG.smena1u[1];
+  document.getElementById('s2h').value = CONFIG.smena2u[0];
+  document.getElementById('s2m').value = CONFIG.smena2u[1];
+  document.getElementById('casMinuta').value = CONFIG.casMinuta;
+  document.getElementById('pauzaPosle').value = CONFIG.pauzaPosle;
+  document.getElementById('pauzaVelika').value = CONFIG.pauzaVelika;
+  document.getElementById('pauzaMala').value = CONFIG.pauzaMala;
+
+  // popuni tabelu rasporeda
+  var tb = document.getElementById('podesavanjaTabela');
+  var h = '';
+  for(var d=0; d<DANI.length; d++){
+    h += '<tr><th>'+DANI[d]+'</th>';
+    for(var c=0; c<7; c++){
+      var v = PLAN[DANI[d]][c] || '';
+      h += '<td><select data-dan="'+DANI[d]+'" data-cas="'+(c+1)+'">';
+      h += '<option value="">— слободно —</option>';
+      for(var p=0; p<PREDMETI.length; p++){
+        var sel = (v === PREDMETI[p]) ? ' selected' : '';
+        h += '<option value="'+PREDMETI[p]+'"'+sel+'>'+PREDMETI[p]+'</option>';
+      }
+      h += '</select></td>';
+    }
+    h += '</tr>';
+  }
+  tb.innerHTML = h;
+
+  document.getElementById('podesavanjaOverlay').style.display = 'flex';
+}
+function zatvoriPodesavanja(){
+  document.getElementById('podesavanjaOverlay').style.display = 'none';
+}
+function sacuvajPodesavanja(){
+  // pročitaj vremena
+  var s1h = parseInt(document.getElementById('s1h').value, 10);
+  var s1m = parseInt(document.getElementById('s1m').value, 10);
+  var s2h = parseInt(document.getElementById('s2h').value, 10);
+  var s2m = parseInt(document.getElementById('s2m').value, 10);
+  var casMinuta = parseInt(document.getElementById('casMinuta').value, 10);
+  var pauzaPosle = parseInt(document.getElementById('pauzaPosle').value, 10);
+  var pauzaVelika = parseInt(document.getElementById('pauzaVelika').value, 10);
+  var pauzaMala = parseInt(document.getElementById('pauzaMala').value, 10);
+
+  // validacija
+  if(isNaN(s1h) || isNaN(s1m) || isNaN(s2h) || isNaN(s2m) ||
+     isNaN(casMinuta) || isNaN(pauzaPosle) || isNaN(pauzaVelika) || isNaN(pauzaMala)){
+    alert('Молим проверите унета времена.');
+    return;
+  }
+  if(s1h<0 || s1h>23 || s1m<0 || s1m>59 || s2h<0 || s2h>23 || s2m<0 || s2m>59){
+    alert('Време мора бити у формату сати (0-23) и минути (0-59).');
+    return;
+  }
+  if(casMinuta<30 || casMinuta>60){
+    alert('Трајање часа мора бити између 30 и 60 минута.');
+    return;
+  }
+  if(pauzaPosle<1 || pauzaPosle>7){
+    alert('Редни број часа за велику паузу мора бити између 1 и 7.');
+    return;
+  }
+
+  // sačuvaj config
+  CONFIG.smena1u = [s1h, s1m];
+  CONFIG.smena2u = [s2h, s2m];
+  CONFIG.casMinuta = casMinuta;
+  CONFIG.pauzaPosle = pauzaPosle;
+  CONFIG.pauzaVelika = pauzaVelika;
+  CONFIG.pauzaMala = pauzaMala;
+  sacuvajConfig();
+
+  // pročitaj raspored iz tabele
+  var selects = document.querySelectorAll('#podesavanjaTabela select');
+  var noviPlan = {};
+  for(var i=0; i<selects.length; i++){
+    var sel = selects[i];
+    var dan = sel.dataset.dan;
+    var cas = parseInt(sel.dataset.cas, 10) - 1; // indeks 0-6
+    if(!noviPlan[dan]) noviPlan[dan] = new Array(7).fill(null);
+    noviPlan[dan][cas] = sel.value || null;
+  }
+  // proveri da li su svi dani popunjeni
+  for(var d=0; d<DANI.length; d++){
+    if(!noviPlan[DANI[d]]) noviPlan[DANI[d]] = new Array(7).fill(null);
+  }
+  PLAN = noviPlan;
+  sacuvajPlan();
+
+  // osveži prikaz
+  REF_NED = CONFIG.refNed;
+  trenutnaSmena = ucitajSmenu();
+  ispuniTabelu();
+  azuriVremena();
+  var ps = document.getElementById('printSmena');
+  if(ps) ps.textContent = trenutnaSmena===1 ? 'Прва смена · '+fmt(CONFIG.smena1u[0]*60+CONFIG.smena1u[1]) : 'Друга смена · '+fmt(CONFIG.smena2u[0]*60+CONFIG.smena2u[1]);
+  // vrati .smene ako je bio sakriven
+  document.querySelector('.smene').style.display = '';
+  // dugmad smene
+  document.getElementById('b1').setAttribute('aria-pressed', trenutnaSmena===1);
+  document.getElementById('b2').setAttribute('aria-pressed', trenutnaSmena===2);
+  prikaziDan(trenutniDan);
+  azuriPoeni();
+  zatvoriPodesavanja();
+}
+function resetujPodesavanja(){
+  if(confirm('Вратити на уграђени распоред и времена?')){
+    CONFIG = Object.assign({}, DEFAULT_CONFIG);
+    PLAN = JSON.parse(JSON.stringify(DEFAULT_PLAN));
+    sacuvajConfig();
+    sacuvajPlan();
+    REF_NED = CONFIG.refNed;
+    trenutnaSmena = ucitajSmenu();
+    ispuniTabelu();
+    azuriVremena();
+    var ps = document.getElementById('printSmena');
+    if(ps) ps.textContent = trenutnaSmena===1 ? 'Прва смена · '+fmt(CONFIG.smena1u[0]*60+CONFIG.smena1u[1]) : 'Друга смена · '+fmt(CONFIG.smena2u[0]*60+CONFIG.smena2u[1]);
+    document.querySelector('.smene').style.display = '';
+    document.getElementById('b1').setAttribute('aria-pressed', trenutnaSmena===1);
+    document.getElementById('b2').setAttribute('aria-pressed', trenutnaSmena===2);
+    prikaziDan(trenutniDan);
+    azuriPoeni();
+    zatvoriPodesavanja();
+  }
+}
 
 /* ══════ ПОКРЕТАЊЕ ══════ */
 (function init(){
@@ -1364,7 +1596,6 @@ if('serviceWorker' in navigator){
         });
       });
 
-      // Klik na obaveštenje -> aktiviraj novi SW, pa osveži stranicu
       if(obavestenje){
         obavestenje.addEventListener('click', function(){
           if(reg.waiting){
@@ -1377,9 +1608,7 @@ if('serviceWorker' in navigator){
           }
         });
       }
-    }).catch(function(){
-      // service worker se ne može registrovati
-    });
+    }).catch(function(){});
   });
 }
 </script>
