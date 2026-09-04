@@ -1343,23 +1343,43 @@ window.addEventListener('scroll', function(){
   document.addEventListener('visibilitychange', function(){ if(!document.hidden) azuriSada(); });
 })();
 
-/* service worker — ради offline; кад дође нова верзија (sw.js), понуди освежавање.
-   Обичне измене распореда (index.html) стижу саме, при сљедећем отварању. */
+/* service worker — radi offline; kad dođe nova verzija (sw.js), ponudi osvežavanje.
+   Obične izmene rasporeda (index.html) stižu same, pri sledećem otvaranju. */
 if('serviceWorker' in navigator){
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('sw.js').then(function(reg){
+    navigator.serviceWorker.register('sw.js', { scope: './' }).then(function(reg){
+      var obavestenje = document.getElementById('novost');
+
       function ponudiNovo(){
-        var n = document.getElementById('novost');
-        if(n) n.style.display = 'block';
+        if(obavestenje) obavestenje.style.display = 'block';
       }
+
       if(reg.waiting && navigator.serviceWorker.controller) ponudiNovo();
+
       reg.addEventListener('updatefound', function(){
-        var nw = reg.installing; if(!nw) return;
-        nw.addEventListener('statechange', function(){
-          if(nw.state === 'installed' && navigator.serviceWorker.controller) ponudiNovo();
+        var novi = reg.installing;
+        if(!novi) return;
+        novi.addEventListener('statechange', function(){
+          if(novi.state === 'installed' && navigator.serviceWorker.controller) ponudiNovo();
         });
       });
-    }).catch(function(){});
+
+      // Klik na obaveštenje -> aktiviraj novi SW, pa osveži stranicu
+      if(obavestenje){
+        obavestenje.addEventListener('click', function(){
+          if(reg.waiting){
+            reg.waiting.postMessage('skipWaiting');
+            reg.waiting.addEventListener('statechange', function(){
+              if(this.state === 'activated') location.reload();
+            });
+          } else {
+            location.reload();
+          }
+        });
+      }
+    }).catch(function(){
+      // service worker se ne može registrovati
+    });
   });
 }
 </script>
