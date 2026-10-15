@@ -397,6 +397,9 @@
   .dnevnik li{display:flex;gap:9px;align-items:baseline;font-size:12.5px;color:rgba(251,239,207,.88);padding:3px 0}
   .dnevnik li .d-datum{color:rgba(241,225,181,.5);min-width:44px}
   .dnevnik li b{color:var(--zlato-s);min-width:34px}
+  .dnevnik li .opozovi{margin-left:auto;flex:none;font-family:inherit;font-size:10.5px;letter-spacing:.5px;cursor:pointer;
+    color:rgba(240,199,94,.6);background:none;border:1px solid rgba(240,199,94,.35);border-radius:999px;padding:3px 10px}
+  .dnevnik li .opozovi:hover{color:var(--zlato-s);border-color:var(--zlato-s)}
   .dnevnik .d-prazno{font-size:11.5px;color:rgba(241,225,181,.45);font-style:italic}
   .novost{display:none;position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:60;
     background:var(--grim-t);border:1px solid var(--zlato-s);color:#FBEFCC;padding:10px 18px;
@@ -441,8 +444,8 @@
     html,body{background:#fff!important;padding:0!important;margin:0!important;display:block!important}
     *{animation:none!important;transition:none!important;
       -webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-    /* декор из позадине се не штампа */
-    .nebo,.mesec,.zamak,.svece,.pero-bg,.iskra,.smene,.dnevno,.sada,.poeni-dugmadi,.domac,.poeni-reset,.poeni-traka,.slavlje,.pregled,.stampaj,.servis,.novost,.podesavanja-overlay{display:none!important}
+    /* декор из позадине се не штампа; поени се не штампају — распоред тада стаје на 1 А4 */
+    .nebo,.mesec,.zamak,.svece,.pero-bg,.iskra,.smene,.dnevno,.sada,.poeni,.poeni-reset,.slavlje,.pregled,.stampaj,.servis,.novost,.podesavanja-overlay{display:none!important}
     /* која је смена, пише се уместо дугмади */
     .print-smena{display:block!important;text-align:center;font-size:13px;letter-spacing:2.5px;
       text-transform:uppercase;color:#7A5A22;margin:0 0 10px}
@@ -470,7 +473,6 @@
     table{min-width:0!important}
     thead th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
     tbody tr,thead tr{page-break-inside:avoid}
-    .poeni{box-shadow:none!important;page-break-inside:avoid}
     footer{page-break-inside:avoid}
     .personalizacija{display:block!important}
   }
@@ -1317,11 +1319,30 @@ function azuriDnevnik(){
       var e = poeni.log[i];
       var delovi = String(e.d||'').split('-');
       var datum = delovi.length===3 ? delovi[2]+'.'+delovi[1]+'.' : e.d;
-      h += '<li><span class="d-datum">'+datum+'</span><b>+'+e.n+'</b><span>'+escapeHtml(e.r)+'</span></li>';
+      var razlog = escapeHtml(e.r);
+      h += '<li><span class="d-datum">'+datum+'</span><b>+'+e.n+'</b><span>'+razlog+'</span>'+
+           '<button type="button" class="opozovi" title="опозови" aria-label="Опозови: +'+e.n+' '+razlog+
+           '" onclick="opozoviUnos('+i+')">опозови</button></li>';
     }
     h += '</ul>';
   }
   el.innerHTML = h;
+}
+/* опозив поена: склони унос из дневника и одузми поене.
+   Звезда се једном освојена НЕ одузима — дете је зарадило. */
+function opozoviUnos(i){
+  var e = poeni.log[i];
+  if(!e) return;
+  poeni.log.splice(i, 1);
+  poeni.ukupno = Math.max(0, poeni.ukupno - e.n);
+  var p = String(e.d || '').split('-');
+  if(p.length === 3){
+    var nk = klicaNedelje(new Date(+p[0], +p[1]-1, +p[2]));
+    if(poeni.nedelje[nk]) poeni.nedelje[nk] = Math.max(0, poeni.nedelje[nk] - e.n);
+  }
+  cuvajPoeni();
+  osveziBrojace();
+  azuriDnevnik();
 }
 function daj(n, razlog){
   var k = nedeljaSkole();
@@ -1536,16 +1557,24 @@ function skreniPregled(){
   if(b) b.textContent = uklj ? 'прикажи по дану' : 'прикажи све дане';
 }
 
-/* ══════ v13 — МИРНИ РЕЖИМ ══════ */
+/* ══════ v14 — МИРНИ РЕЖИМ ══════
+   Подразумевано: телефон (≤700px) мирује ради батерије, већи екрани
+   одмах добијају пуну магију. Ручни избор се памти и увек побеђује. */
+function mirnoPodrazumevano(){
+  return window.matchMedia && window.matchMedia('(max-width: 700px)').matches;
+}
+function trenutnoMirno(){
+  var sacuvano = store.get('mirni');
+  return sacuvano !== null ? (sacuvano !== '0') : mirnoPodrazumevano();
+}
 function primeniMirno(){
-  var miran = store.get('mirni') !== '0';
+  var miran = trenutnoMirno();
   document.body.classList.toggle('mirno', miran);
   var a = document.getElementById('mirniLink');
   if(a) a.textContent = miran ? 'магија: мирна' : 'магија: пуна ✦';
 }
 function okreniMirno(){
-  var miran = store.get('mirni') !== '0';
-  store.set('mirni', miran ? '0' : '1');
+  store.set('mirni', trenutnoMirno() ? '0' : '1');
   primeniMirno();
 }
 var mirTajmer = null;
@@ -1775,21 +1804,6 @@ if('serviceWorker' in navigator){
     <div class="slavlje-tap">✦ тапни ✦</div>
   </div>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a35f8f9f2aeee298',t:'MTc4ODU1MTgyMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","spa":2}' crossorigin="anonymous"></script>
-</body>
-</html>
-ss="slavlje-kartica">
-    <div class="slavlje-trofej" id="slavljeTrofej"></div>
-    <div class="slavlje-naslov" id="slavljeNaslov"></div>
-    <div class="slavlje-sub" id="slavljeSub"></div>
-    <div class="slavlje-tap">✦ тапни ✦</div>
-  </div>
-</div>
-</body>
-</html>
-v>
-    <div class="slavlje-tap">✦ тапни ✦</div>
-  </div>
-</div>
-</body>
+
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4b1b6275aa3e292',t:'MTc5MjA5NzU4OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
